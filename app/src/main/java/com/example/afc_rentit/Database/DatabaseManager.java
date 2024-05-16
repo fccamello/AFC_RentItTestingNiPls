@@ -12,7 +12,9 @@ import java.util.concurrent.Executors;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
-    private DatabaseManager(){}
+    private DatabaseManager(){
+        initializeDB();
+    }
     public static DatabaseManager getInstance(){
         if (instance == null){
             instance = new DatabaseManager();
@@ -21,7 +23,6 @@ public class DatabaseManager {
         return instance;
     }
     public void initializeDB(){
-         boolean found;
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()->{
             try (Connection c = SQLConnection.getConnection()){
@@ -78,6 +79,7 @@ public class DatabaseManager {
                 stmt.execute(createtblRentRequest);
 
                 c.commit();
+                System.out.println(SQLConnection.DBName);
                 System.out.println("Database with TABLES created successfully.");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -90,23 +92,26 @@ public class DatabaseManager {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection c = SQLConnection.getConnection()) {
-                String query = "INSERT INTO tblUser (firstname, lastname, gender, email, username, password) VALUES (?, ?, ?, ?, ?, ?)";
+                String query = "INSERT INTO tblUser (firstname, lastname, gender, address, contact_number, email, username, password, isOwner) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                    int isOwner = (userType.equals("Owner")) ? 1 : 0;
+                    int isOwner = (userType.equals("Owner")) ? 1 : 0; // if userType == 0, then 1 else 0
 
                     statement.setString(1, firstName);
                     statement.setString(2, lastName);
                     statement.setString(3, gender);
-                    statement.setString(4, email);
-                    statement.setString(5, username);
-                    statement.setString(6, password);
+                    statement.setString(4, address);
+                    statement.setInt(5, 45); // contact_number
+                    statement.setString(6, email);
+                    statement.setString(7, username);
+                    statement.setString(8, password);
+                    statement.setInt(9, isOwner);
 
                     int rowsInserted = statement.executeUpdate();
                     if (rowsInserted > 0) {
                         System.out.println("User inserted successfully.");
                         ResultSet res = statement.getGeneratedKeys();
                         res.next();
-                        int user_id = res.getInt("user_id");
+                        int user_id = res.getInt(1);
                         current_user.setCurrent_User(user_id, username, firstName, lastName, email, address, gender, (isOwner == 1));
                         System.out.println(current_user);
                     } else {

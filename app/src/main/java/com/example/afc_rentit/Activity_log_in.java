@@ -18,7 +18,7 @@ public class Activity_log_in extends AppCompatActivity {
     private EditText etusername, etpassword;
     private Button btnlogin;
     private TextView signupredirect;
-
+    DatabaseManager dbManager = DatabaseManager.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +51,7 @@ public class Activity_log_in extends AppCompatActivity {
         String username = etusername.getText().toString().trim();
         String password = etpassword.getText().toString().trim();
 
-        DatabaseManager dbManager = DatabaseManager.getInstance();
         dbManager.validateUser(username, password);
-
-
 
         Toast.makeText(getApplicationContext(), "Log-in Success!", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Activity_log_in.this, MainActivity.class);

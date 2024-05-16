@@ -20,15 +20,12 @@ public class Activity_sign_up extends AppCompatActivity {
 
     private RadioGroup userTypeRadioGroup, genderRadioGroup;
     private Button btnsignUp;
-
+    DatabaseManager dbManager = DatabaseManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_sign_up);
-
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.initializeDB();
 
         etfname = findViewById(R.id.signup_firstname);
         etlastname = findViewById(R.id.signup_lastname);
@@ -39,7 +36,7 @@ public class Activity_sign_up extends AppCompatActivity {
         genderRadioGroup = findViewById(R.id.gender_radio_group);
         btnsignUp = findViewById(R.id.signup_button);
 
-        btnsignUp.setOnClickListener(view -> insertUsers());
+        btnsignUp.setOnClickListener(view -> {insertUsers();});
 
         loginredirect = findViewById(R.id.loginredirect);
         loginredirect.setOnClickListener(new View.OnClickListener() {

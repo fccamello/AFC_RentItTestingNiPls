@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.initializeDB();
 
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
