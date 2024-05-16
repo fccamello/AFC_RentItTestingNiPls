@@ -17,13 +17,11 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     FloatingActionButton createPost;
+    DatabaseManager dbManager = DatabaseManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
