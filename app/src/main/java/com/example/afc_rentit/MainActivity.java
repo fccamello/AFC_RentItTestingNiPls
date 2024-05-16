@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DatabaseManager.initializeDB();
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+        dbManager.initializeDB();
     }
 }

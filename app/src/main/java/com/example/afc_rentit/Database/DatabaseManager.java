@@ -7,16 +7,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DatabaseManager {
-//    private static DatabaseManager instance;
-//    private DatabaseManager(){};
-//    public static DatabaseManager getInstance(){
-//        if (instance == null){
-//            instance = new DatabaseManager();
-//        }
-//
-//        return instance;
-//    };
-    public static void initializeDB(){
+    private static DatabaseManager instance;
+    private DatabaseManager(){}
+    public static DatabaseManager getInstance(){
+        if (instance == null){
+            instance = new DatabaseManager();
+        }
+
+        return instance;
+    }
+    public void initializeDB(){
+         boolean found;
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()->{
             try (Connection c = SQLConnection.getConnection()){
@@ -41,8 +42,8 @@ public class DatabaseManager {
                         "contact_number INT(11) NOT NULL," +
                         "email VARCHAR (50) NOT NULL," +
                         "username VARCHAR (50) NOT NULL," +
-                        "password VARCHAR (50) NOT NULL)," +
-                        "isOwner INT (1) NOT NULL DEFAULT 0";
+                        "password VARCHAR (50) NOT NULL," +
+                        "isOwner INT (1) NOT NULL DEFAULT 0)";
                 stmt.execute(createTblUserQuery);
 
                 String createTblItemQuery = "CREATE TABLE IF NOT EXISTS tblItem(" +
@@ -54,7 +55,7 @@ public class DatabaseManager {
                         "category VARCHAR (25) NOT NULL," +
                         "price DOUBLE NOT NULL," +
                         "isAvailable INT NOT NULL," +
-                        "FOREIGN KEY (user_id) REFERENCES tbluser (user_id) ON_DELETE CASCADE)";
+                        "FOREIGN KEY (user_id) REFERENCES tbluser (user_id) ON DELETE CASCADE)";
                 stmt.execute(createTblItemQuery);
 
                 String createtblRentRequest = "CREATE TABLE IF NOT EXISTS tblRentRequest(" +
@@ -62,10 +63,15 @@ public class DatabaseManager {
                         "item_id INT NOT NULL," +
                         "user_id INT NOT NULL," +
                         "requestDate DATE NOT NULL," +
-                        "durationCategory INT/VARCHAR NOT NULL," +
+                        "durationCategory VARCHAR (20) NOT NULL," +
                         "duration INT NOT NULL," +
                         "endRentDate DATE NOT NULL," +
-                        ")";
+                        "totalAmount DOUBLE NOT NULL," +
+                        "isApproved INT NOT NULL DEFAULT -1," +
+                        "isReturned INT NOT NULL DEFAULT 0," +
+                        "FOREIGN KEY (item_id) REFERENCES tblItem (item_id)," +
+                        "FOREIGN KEY (user_id) REFERENCES tblUser (user_id) ON DELETE CASCADE)";
+                stmt.execute(createtblRentRequest);
 
                 c.commit();
                 System.out.println("Database with TABLES created successfully.");
