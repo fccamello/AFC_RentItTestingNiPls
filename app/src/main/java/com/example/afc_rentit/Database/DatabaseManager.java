@@ -1,6 +1,10 @@
 package com.example.afc_rentit.Database;
 
+import com.example.afc_rentit.Current_User;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.ExecutorService;
@@ -79,5 +83,74 @@ public class DatabaseManager {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private final Current_User current_user = Current_User.getInstance();
+    public void insertUser(String firstName, String lastName, String gender, String email, String address, String username, String userType, String password) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection c = SQLConnection.getConnection()) {
+                String query = "INSERT INTO tblUser (firstname, lastname, gender, email, username, password) VALUES (?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement statement = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                    int isOwner = (userType.equals("Owner")) ? 1 : 0;
+
+                    statement.setString(1, firstName);
+                    statement.setString(2, lastName);
+                    statement.setString(3, gender);
+                    statement.setString(4, email);
+                    statement.setString(5, username);
+                    statement.setString(6, password);
+
+                    int rowsInserted = statement.executeUpdate();
+                    if (rowsInserted > 0) {
+                        System.out.println("User inserted successfully.");
+                        ResultSet res = statement.getGeneratedKeys();
+                        res.next();
+                        int user_id = res.getInt("user_id");
+                        current_user.setCurrent_User(user_id, username, firstName, lastName, email, address, gender, (isOwner == 1));
+                        System.out.println(current_user);
+                    } else {
+                        System.out.println("Failed to insert user.");
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private boolean userIsFound = false;
+
+    public boolean validateUser(String username, String password) {
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection connection = SQLConnection.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM tblUser WHERE username = ? AND password = ?")) {
+                statement.setString(1, username);
+                statement.setString(2, password);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    userIsFound = true;
+
+                    resultSet.next();
+                    current_user.setCurrent_User(
+                            resultSet.getInt("user_id"),
+                            resultSet.getString("username"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"),
+                            resultSet.getString("email"),
+                            resultSet.getString("address"),
+                            resultSet.getString("gender"),
+                            (resultSet.getInt("isOwner") == 1)
+                    );
+
+                    System.out.println(current_user);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+        return userIsFound;
     }
 }

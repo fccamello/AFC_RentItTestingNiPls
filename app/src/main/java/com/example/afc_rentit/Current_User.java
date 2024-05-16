@@ -1,5 +1,7 @@
 package com.example.afc_rentit;
 
+import androidx.annotation.NonNull;
+
 public class Current_User {
     private static Current_User instance;
     private Current_User(){};
@@ -11,13 +13,28 @@ public class Current_User {
     private String address;
     private String gender;
     private boolean isOwner;
-    private String password;
     public static Current_User getInstance(){
         if (instance == null){
             instance = new Current_User();
         }
 
         return instance;
+    }
+
+    public void resetCurrent_User(){
+        instance = null;
+    }
+    public void setCurrent_User(int user_id, String username, String firstname, String lastname,
+                                String email, String address, String gender, boolean isOwner) {
+
+        this.user_id = user_id;
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.address = address;
+        this.gender = gender;
+        this.isOwner = isOwner;
     }
 
     public int getUser_id() {
@@ -83,12 +100,10 @@ public class Current_User {
     public void setOwner(boolean owner) {
         isOwner = owner;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    @NonNull
+    @Override
+    public String toString() {
+        return "user_id: " + user_id +
+                "\nusername: " + username;
     }
 }
