@@ -1,5 +1,6 @@
 package com.example.afc_rentit;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,9 +15,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.afc_rentit.Database.DatabaseManager;
+import com.example.afc_rentit.Database.SQLConnection;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -70,6 +78,8 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        setUpItemModels();
     }
 
     @Override
@@ -79,11 +89,10 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        setUpItemModels();
 
         item_views_container = view.findViewById(R.id.rv_ItemViews);
         item_views_container.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -93,17 +102,44 @@ public class HomeFragment extends Fragment {
         item_views_container.setAdapter(item_adapter);
         item_adapter.notifyDataSetChanged();
 
-        noItemView = view.findViewById(R.id.tv_NoItems);
-        if (items.isEmpty()){
-            noItemView.setVisibility(View.VISIBLE);
-            item_views_container.setVisibility(View.INVISIBLE);
-        } else {
-            item_views_container.setVisibility(View.VISIBLE);
-        }
+//        noItemView = view.findViewById(R.id.tv_NoItems);
+//        System.out.println("number of items: " + items.size());
+//        if (items.isEmpty()){
+//            noItemView.setVisibility(View.VISIBLE);
+//            item_views_container.setVisibility(View.INVISIBLE);
+//        } else {
+//            item_views_container.setVisibility(View.VISIBLE);
+//        }
     }
 
 
     private void setUpItemModels(){
-        dbManager.getItems(items);
+//        items = dbManager.getItems();
+//        if (!items.isEmpty()) System.out.println("yey success");
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(()-> {
+            try (Connection conn = SQLConnection.getConnection();
+                 Statement stmt = conn.createStatement()){
+
+                String query = "SELECT item_id, user_id, title, description, image, category, price " +
+                        "FROM tblitem WHERE isAvailable = 1";
+                ResultSet res = stmt.executeQuery(query);
+
+                while (res.next()){
+                    System.out.println("item_id: " + res.getInt("item_id"));
+                    items.add(new Item(
+                            res.getInt("item_id"),
+                            res.getInt("user_id"),
+                            res.getString("title"),
+                            res.getString("image"),
+                            res.getString("description"),
+                            res.getString("category"),
+                            res.getDouble("price")
+                    ));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

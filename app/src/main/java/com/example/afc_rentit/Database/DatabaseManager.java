@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -166,10 +167,10 @@ public class DatabaseManager {
         return userIsFound;
     }
 
-    public void getItems (List<Item> items){
+    public List<Item> getItems (){
         final boolean [] retrievedItems = {true};
-        final List<Item> models = items;
-
+        final List<Item> models = new ArrayList<>();
+        System.out.println("current db: " + SQLConnection.DBName);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(new Runnable() {
             @Override
@@ -177,11 +178,12 @@ public class DatabaseManager {
                 try (Connection conn = SQLConnection.getConnection();
                      Statement stmt = conn.createStatement()){
 
-                    String query = "SELECT item_id, user_id, title, description, image, category, price" +
-                            "FROM tblItem WHERE isAvailable = 1";
+                    String query = "SELECT item_id, user_id, title, description, image, category, price " +
+                            "FROM tblitem WHERE isAvailable = 1";
                     ResultSet items = stmt.executeQuery(query);
 
                     while (items.next()){
+                        System.out.println("item_id: " + items.getInt("item_id"));
                         models.add(new Item(
                                 items.getInt("item_id"),
                                 items.getInt("user_id"),
@@ -198,5 +200,7 @@ public class DatabaseManager {
                 }
             }
         });
+
+        return models;
     }
 }
