@@ -66,8 +66,16 @@ public class Activity_sign_up extends AppCompatActivity {
         RadioButton genderRadioButton = findViewById(genderRadioGroup.getCheckedRadioButtonId());
         String gender = genderRadioButton.getText().toString();
 
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        dbManager.insertUser(firstName, lastName, gender, email, "address", username, userType, password);
+        boolean user_inserted = dbManager.insertUser(firstName, lastName, gender, email, "address", username, userType, password);
+
+        if (user_inserted){
+            Intent intent1 = new Intent(
+              Activity_sign_up.this,
+                    MainActivity.class
+            );
+
+            startActivity(intent1);
+        }
     }
 
 }

@@ -51,10 +51,16 @@ public class Activity_log_in extends AppCompatActivity {
         String username = etusername.getText().toString().trim();
         String password = etpassword.getText().toString().trim();
 
-        dbManager.validateUser(username, password);
+        boolean validated = dbManager.validateUser(username, password);
 
-        Toast.makeText(getApplicationContext(), "Log-in Success!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(Activity_log_in.this, MainActivity.class);
-        startActivity(intent);
+        if (validated){
+            Toast.makeText(getApplicationContext(), "Log-in Success!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Activity_log_in.this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getApplicationContext(), "Log-in unsuccessful! Username or password is incorrect", Toast.LENGTH_SHORT).show();
+            etusername.setText("");
+            etpassword.setText("");
+        }
     }
 }

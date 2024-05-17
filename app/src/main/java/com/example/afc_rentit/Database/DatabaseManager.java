@@ -1,12 +1,14 @@
 package com.example.afc_rentit.Database;
 
 import com.example.afc_rentit.Current_User;
+import com.example.afc_rentit.Item;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,7 +46,7 @@ public class DatabaseManager {
                         "lastname VARCHAR (50) NOT NULL," +
                         "gender VARCHAR (50) NOT NULL," +
                         "address VARCHAR (100) NOT NULL," +
-                        "contact_number INT(11) NOT NULL," +
+                        "contact_number VARCHAR(11) NOT NULL," +
                         "email VARCHAR (50) NOT NULL," +
                         "username VARCHAR (50) NOT NULL," +
                         "password VARCHAR (50) NOT NULL," +
@@ -88,7 +90,9 @@ public class DatabaseManager {
     }
 
     private final Current_User current_user = Current_User.getInstance();
-    public void insertUser(String firstName, String lastName, String gender, String email, String address, String username, String userType, String password) {
+    public boolean insertUser(String firstName, String lastName, String gender, String email, String address, String username, String userType, String password) {
+        final boolean[] result = {true};
+        String contact_number = "09123456789";
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection c = SQLConnection.getConnection()) {
@@ -100,7 +104,7 @@ public class DatabaseManager {
                     statement.setString(2, lastName);
                     statement.setString(3, gender);
                     statement.setString(4, address);
-                    statement.setInt(5, 45); // contact_number
+                    statement.setString(5, contact_number); // contact_number
                     statement.setString(6, email);
                     statement.setString(7, username);
                     statement.setString(8, password);
@@ -120,8 +124,11 @@ public class DatabaseManager {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                result[0] = false;
             }
         });
+
+        return result[0];
     }
 
     private boolean userIsFound = false;
@@ -157,5 +164,39 @@ public class DatabaseManager {
         });
 
         return userIsFound;
+    }
+
+    public void getItems (List<Item> items){
+        final boolean [] retrievedItems = {true};
+        final List<Item> models = items;
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try (Connection conn = SQLConnection.getConnection();
+                     Statement stmt = conn.createStatement()){
+
+                    String query = "SELECT item_id, user_id, title, description, image, category, price" +
+                            "FROM tblItem WHERE isAvailable = 1";
+                    ResultSet items = stmt.executeQuery(query);
+
+                    while (items.next()){
+                        models.add(new Item(
+                                items.getInt("item_id"),
+                                items.getInt("user_id"),
+                                items.getString("title"),
+                                items.getString("image"),
+                                items.getString("description"),
+                                items.getString("category"),
+                                items.getDouble("price")
+                        ));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    retrievedItems[0] = false;
+                }
+            }
+        });
     }
 }
