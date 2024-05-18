@@ -18,6 +18,10 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     FloatingActionButton createPost;
     DatabaseManager dbManager = DatabaseManager.getInstance();
+    private final HomeFragment homeFragment = new HomeFragment();
+    private final DashboardFragment dashboardFragment = new DashboardFragment();
+    private final NotificationFragment notificationFragment = new NotificationFragment();
+    private final ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +37,13 @@ public class MainActivity extends AppCompatActivity {
 
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
-                replaceFragment(new HomeFragment());
+                replaceFragment(homeFragment);
             } else if (itemId == R.id.dashboard) {
-                replaceFragment(new DashboardFragment());
+                replaceFragment(dashboardFragment);
             } else if (itemId == R.id.notifications) {
-                replaceFragment(new NotificationFragment());
+                replaceFragment(notificationFragment);
             } else if (itemId == R.id.profile) {
-                replaceFragment(new ProfileFragment());
+                replaceFragment(profileFragment);
             } else {
                 return false;
             }
@@ -60,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void replaceFragment(Fragment fragment) {
+//        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, fragment).commit();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout, fragment);

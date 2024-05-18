@@ -79,7 +79,6 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
         setUpItemModels();
     }
 
@@ -103,32 +102,28 @@ public class HomeFragment extends Fragment {
         item_views_container.setAdapter(item_adapter);
         item_adapter.notifyDataSetChanged();
 
-//        noItemView = view.findViewById(R.id.tv_NoItems);
-//        System.out.println("number of items: " + items.size());
-//        if (items.isEmpty()){
-//            noItemView.setVisibility(View.VISIBLE);
-//            item_views_container.setVisibility(View.INVISIBLE);
-//        } else {
-//            item_views_container.setVisibility(View.VISIBLE);
-//        }
+        noItemView = view.findViewById(R.id.tv_NoItems);
     }
 
 
     private void setUpItemModels(){
-//        items = dbManager.getItems();
-//        if (!items.isEmpty()) System.out.println("yey success");
+        List<Item> newItems = new ArrayList<>();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()-> {
             try (Connection conn = SQLConnection.getConnection();
                  Statement stmt = conn.createStatement()){
 
+                String numItemQuery = "SELECT count(item_id) as count FROM tblitem WHERE isAvailable = 1";
+                ResultSet resItem = stmt.executeQuery(numItemQuery);
+                int itemNum = (resItem.next()) ? resItem.getInt("count") : 0;
+                System.out.println("item query size: " + itemNum);
                 String query = "SELECT item_id, user_id, title, description, image, category, price " +
                         "FROM tblitem WHERE isAvailable = 1";
                 ResultSet res = stmt.executeQuery(query);
 
                 while (res.next()){
                     System.out.println("item_id: " + res.getInt("item_id"));
-                    items.add(new Item(
+                    newItems.add(new Item(
                             res.getInt("item_id"),
                             res.getInt("user_id"),
                             res.getString("title"),
@@ -138,6 +133,16 @@ public class HomeFragment extends Fragment {
                             res.getDouble("price")
                     ));
                 }
+
+                items = newItems;
+                getActivity().runOnUiThread(()->{
+                    System.out.println("items number: " + items.size());
+                    if (items.isEmpty()){
+                        noItemView.setVisibility(View.VISIBLE);
+                    } else {
+                        noItemView.setVisibility(View.INVISIBLE);
+                    }
+                });
             } catch (SQLException e) {
                 e.printStackTrace();
             }

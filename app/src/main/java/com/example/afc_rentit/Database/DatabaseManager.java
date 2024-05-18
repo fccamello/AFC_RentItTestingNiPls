@@ -75,6 +75,7 @@ public class DatabaseManager {
                         "duration INT NOT NULL," +
                         "endRentDate DATE NOT NULL," +
                         "totalAmount DOUBLE NOT NULL," +
+                        "modeOfDelivery VARCHAR (50) NOT NULL," +
                         "isApproved INT NOT NULL DEFAULT -1," +
                         "isReturned INT NOT NULL DEFAULT 0," +
                         "FOREIGN KEY (item_id) REFERENCES tblItem (item_id)," +

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tv_description"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".Activity_View_Item_Details">
@@ -16,11 +17,15 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="back" />
+            <ImageButton
+                android:id="@+id/btnBackArrow"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:backgroundTint="#00FFFFFF"
+                android:contentDescription="back_arrow"
+                android:scaleType="centerInside"
+                android:src="@drawable/back_arrow" />
+
         </LinearLayout>
 
         <ScrollView
@@ -32,25 +37,109 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/iv_image"
                     android:layout_width="411dp"
                     android:layout_height="382dp"
                     android:layout_gravity="center"
                     android:src="@drawable/round_person_24" />
 
-                <TextView
-                    android:id="@+id/textView"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="54dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₱"
+                        android:textColor="#D51D1D"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/tv_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="22.00"
+                        android:textColor="#D51D1D"
+                        android:textSize="30sp" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="per day"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_itemtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center|fill_horizontal"
-                    android:autoSizeMaxTextSize="40dp"
-                    android:autoSizeMinTextSize="24dp"
-                    android:autoSizeTextType="uniform"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="Item Name" />
+                    android:text="Item Name"
+                    android:textColor="#494848"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Description"
+                    android:textColor="#535353"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_itemdesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="5sp"
+                    android:text="description"
+                    android:textAlignment="viewStart"
+                    android:textColor="#535353"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Owner"
+                    android:textColor="#535353"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_itemowner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#535353"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Ships from"
+                    android:textColor="#535353"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_itemadd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#535353"
+                    android:textSize="20sp" />
             </LinearLayout>
         </ScrollView>
 
@@ -59,6 +148,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
             android:text="Rent Item" />
 
     </LinearLayout>
