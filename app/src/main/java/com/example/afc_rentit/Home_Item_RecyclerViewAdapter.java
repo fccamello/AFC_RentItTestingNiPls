@@ -52,6 +52,8 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
 
                 Intent intent = new Intent(context, Activity_View_Item_Details.class);
                 intent.putExtra("item_id", item.getItem_id());
+
+                activity.startActivity(intent);
             }
         });
     }
