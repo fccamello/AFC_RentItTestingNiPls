@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.afc_rentit.Database.DatabaseManager;
 import com.example.afc_rentit.Database.SQLConnection;
@@ -48,6 +51,8 @@ public class HomeFragment extends Fragment {
     List<Item> items = new ArrayList<>();
     RecyclerView item_views_container;
     Home_Item_RecyclerViewAdapter item_adapter;
+    SearchView searchbox;
+    Button btnEducation, btnEntertainment, btnElectronic, btnAll;
     TextView noItemView;
 
     public HomeFragment() {
@@ -79,6 +84,7 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
         setUpItemModels();
     }
 
@@ -89,12 +95,19 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    // ANG PAGPASHOW SA ITEMS
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         item_views_container = view.findViewById(R.id.rv_ItemViews);
+        searchbox = view.findViewById(R.id.searchbox);
+        btnEducation = view.findViewById(R.id.btnEducation);
+        btnElectronic = view.findViewById(R.id.btnElectronic);
+        btnEntertainment = view.findViewById(R.id.btnEntertainment);
+        btnAll = view.findViewById(R.id.btnAll);
+
         item_views_container.setLayoutManager(new GridLayoutManager(getContext(),2));
         item_views_container.hasFixedSize();
 
@@ -102,28 +115,104 @@ public class HomeFragment extends Fragment {
         item_views_container.setAdapter(item_adapter);
         item_adapter.notifyDataSetChanged();
 
-        noItemView = view.findViewById(R.id.tv_NoItems);
+        // SEARCH
+
+        searchbox.clearFocus();
+        searchbox.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return true;
+            }
+        });
+
+        btnEducation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                categoryList("Education");
+            }
+        });
+
+        btnEntertainment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                categoryList("Entertainment");
+            }
+        });
+
+        btnElectronic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                categoryList("Electronic");
+            }
+        });
+
+        btnAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                item_adapter.items = items;
+                item_adapter.notifyDataSetChanged();
+            }
+        });
+
+//        noItemView = view.findViewById(R.id.tv_NoItems);
+//        System.out.println("number of items: " + items.size());
+//        if (items.isEmpty()){
+//            noItemView.setVisibility(View.VISIBLE);
+//            item_views_container.setVisibility(View.INVISIBLE);
+//        } else {
+//            item_views_container.setVisibility(View.VISIBLE);
+//        }
     }
 
+    private void filterList(String text) {
+        List<Item> filteredList = new ArrayList<>();
+
+        for(Item item : items) {
+            if(item.getTitle().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+
+        if(filteredList.isEmpty()) {
+            Toast.makeText(getContext(),"No education items found!", Toast.LENGTH_SHORT).show();
+        } else {
+            item_adapter.setFilteredList(filteredList);
+        }
+    }
+
+    private void categoryList(String category) {
+        List<Item> categoryList = new ArrayList<>();
+
+        for(Item item : items) {
+            if(item.getCategory().equals(category)) {
+                categoryList.add(item);
+            }
+        }
+
+        item_adapter.setCategoryList(categoryList);
+    }
 
     private void setUpItemModels(){
-        List<Item> newItems = new ArrayList<>();
+//        items = dbManager.getItems();
+//        if (!items.isEmpty()) System.out.println("yey success");
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()-> {
             try (Connection conn = SQLConnection.getConnection();
                  Statement stmt = conn.createStatement()){
 
-                String numItemQuery = "SELECT count(item_id) as count FROM tblitem WHERE isAvailable = 1";
-                ResultSet resItem = stmt.executeQuery(numItemQuery);
-                int itemNum = (resItem.next()) ? resItem.getInt("count") : 0;
-                System.out.println("item query size: " + itemNum);
                 String query = "SELECT item_id, user_id, title, description, image, category, price " +
                         "FROM tblitem WHERE isAvailable = 1";
                 ResultSet res = stmt.executeQuery(query);
 
                 while (res.next()){
                     System.out.println("item_id: " + res.getInt("item_id"));
-                    newItems.add(new Item(
+                    items.add(new Item(
                             res.getInt("item_id"),
                             res.getInt("user_id"),
                             res.getString("title"),
@@ -133,16 +222,6 @@ public class HomeFragment extends Fragment {
                             res.getDouble("price")
                     ));
                 }
-
-                items = newItems;
-                getActivity().runOnUiThread(()->{
-                    System.out.println("items number: " + items.size());
-                    if (items.isEmpty()){
-                        noItemView.setVisibility(View.VISIBLE);
-                    } else {
-                        noItemView.setVisibility(View.INVISIBLE);
-                    }
-                });
             } catch (SQLException e) {
                 e.printStackTrace();
             }

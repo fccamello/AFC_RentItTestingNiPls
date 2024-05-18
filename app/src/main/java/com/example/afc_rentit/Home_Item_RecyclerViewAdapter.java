@@ -38,6 +38,7 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         String desc = item.getDescription();
 
         holder.tv_title.setText(item.getTitle());
+        holder.tv_category.setText(item.getCategory());
 
         if(item.getDescription().length() > 20) {
             desc = desc.substring(0,20);
@@ -69,14 +70,26 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         // similar to oncreate method sa activity files
 
         ImageView iv_itemImage;
-        TextView tv_title, tv_desc;
+        TextView tv_title, tv_category, tv_desc;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             iv_itemImage = itemView.findViewById(R.id.item_image);
             tv_title = itemView.findViewById(R.id.item_title);
+            tv_category = itemView.findViewById(R.id.item_category);
             tv_desc = itemView.findViewById(R.id.item_desc);
         }
+    }
+
+    // SEARCH
+    public void setFilteredList(List<Item> filteredList) {
+        items = filteredList;
+        notifyDataSetChanged();
+    }
+
+    public void setCategoryList(List<Item> category) {
+     items = category;
+     notifyDataSetChanged();
     }
 
 }

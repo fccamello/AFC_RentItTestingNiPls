@@ -34,10 +34,16 @@
                 android:text="Calculator" />
 
             <TextView
-                android:id="@+id/item_desc"
+                android:id="@+id/item_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Education" />
+
+            <TextView
+                android:id="@+id/item_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="for students" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>y

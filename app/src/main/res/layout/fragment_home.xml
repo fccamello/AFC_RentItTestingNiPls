@@ -7,19 +7,105 @@
     android:background="@color/lavender"
     tools:context=".HomeFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/navbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/lavender">
+        android:layout_height="match_parent">
 
-        <SearchView
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/navbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:background="#FFFFFF" />
+            android:layout_height="wrap_content"
+            android:background="@color/lavender"
+            app:layout_goneMarginBottom="20px"
+            tools:ignore="MissingConstraints">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <SearchView
+                    android:id="@+id/searchbox"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="20dp"
+                    android:background="#FFFFFF"
+                    app:queryHint="Search item here..." />
+
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="Categories"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="15dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="#FFFFFF"
+                            android:text="ALL"
+                            android:textColor="#8591F6"
+                            android:textStyle="bold"
+                            app:cornerRadius="20dp" />
+
+                        <Button
+                            android:id="@+id/btnEducation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="#FFFFFF"
+                            android:text="Education"
+                            android:textColor="#8591F6"
+                            android:textStyle="bold"
+                            app:cornerRadius="20dp" />
+
+                        <Button
+                            android:id="@+id/btnElectronic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="#FFFFFF"
+                            android:text="Electronic"
+                            android:textColor="#8591F6"
+                            android:textStyle="bold"
+                            app:cornerRadius="20dp" />
+
+                        <Button
+                            android:id="@+id/btnEntertainment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="#FFFFFF"
+                            android:text="Entertainment"
+                            android:textColor="#8591F6"
+                            android:textStyle="bold"
+                            app:cornerRadius="20dp" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_NoItems"
@@ -32,5 +118,6 @@
         android:id="@+id/rv_ItemViews"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="50dp" />
 </FrameLayout>
