@@ -271,8 +271,9 @@ public class Activity_RentItem extends AppCompatActivity {
                         displayItem();
 
                         if (rent_id != -1){
-                            rentDisabled();
+//                            rentDisabled();
                             Toast.makeText(this, "You have already requested to rent this item. Please wait for confirmation.", Toast.LENGTH_LONG).show();
+                            finish();
                         }
                     });
                 }
