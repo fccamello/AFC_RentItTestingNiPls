@@ -16,6 +16,9 @@
         android:theme="@style/Theme.AFC_RentIt"
         tools:targetApi="31">
         <activity
+            android:name=".Activity_RentItem"
+            android:exported="false" />
+        <activity
             android:name=".Activity_View_Item_Details"
             android:exported="false" />
         <activity
