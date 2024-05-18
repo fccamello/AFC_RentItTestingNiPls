@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -95,7 +96,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         item_views_container = view.findViewById(R.id.rv_ItemViews);
-        item_views_container.setLayoutManager(new LinearLayoutManager(getContext()));
+        item_views_container.setLayoutManager(new GridLayoutManager(getContext(),2));
         item_views_container.hasFixedSize();
 
         item_adapter = new Home_Item_RecyclerViewAdapter(getContext(), items);

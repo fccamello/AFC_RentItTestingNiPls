@@ -35,7 +35,14 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         // assigning values to the item_views we created in the home_item_view file
         // based on the position of the item_view
         Item item = items.get(position);
+        String desc = item.getDescription();
+
         holder.tv_title.setText(item.getTitle());
+
+        if(item.getDescription().length() > 20) {
+            desc = desc.substring(0,20);
+        }
+        holder.tv_desc.setText(desc);
         // to do image, i don know how
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -60,12 +67,13 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         // similar to oncreate method sa activity files
 
         ImageView iv_itemImage;
-        TextView tv_title;
+        TextView tv_title, tv_desc;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             iv_itemImage = itemView.findViewById(R.id.item_image);
             tv_title = itemView.findViewById(R.id.item_title);
+            tv_desc = itemView.findViewById(R.id.item_desc);
         }
     }
 

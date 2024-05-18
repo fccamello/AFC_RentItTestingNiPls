@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLConnection {
-    public static final String IP = ""; // TODO : change string to own IP
+    public static final String IP = "192.168.68.106"; // TODO : change string to own IP
     public static final String URL = "jdbc:mysql://" + IP + ":3306/";
     public static String DBName = "";
     public static final String USERNAME = "AFC";
