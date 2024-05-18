@@ -12,13 +12,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.afc_rentit.Database.DatabaseManager;
+import com.example.afc_rentit.Database.SQLConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Activity_log_in extends AppCompatActivity {
 
     private EditText etusername, etpassword;
     private Button btnlogin;
     private TextView signupredirect;
-    DatabaseManager dbManager = DatabaseManager.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +48,9 @@ public class Activity_log_in extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validateUsers();
+                if (etusername.getText().length() != 0 && etpassword.getText().length() != 0){
+                    validateUsers();
+                }
             }
         });
 
@@ -51,16 +60,54 @@ public class Activity_log_in extends AppCompatActivity {
         String username = etusername.getText().toString().trim();
         String password = etpassword.getText().toString().trim();
 
-        boolean validated = dbManager.validateUser(username, password);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(()->{
+            Current_User current_user = Current_User.getInstance();
 
-        if (validated){
-            Toast.makeText(getApplicationContext(), "Log-in Success!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(Activity_log_in.this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            Toast.makeText(getApplicationContext(), "Log-in unsuccessful! Username or password is incorrect", Toast.LENGTH_SHORT).show();
-            etusername.setText("");
-            etpassword.setText("");
-        }
+            try (Connection connection = SQLConnection.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM tblUser WHERE username = ? AND password = ?")) {
+                statement.setString(1, username);
+                statement.setString(2, password);
+
+                ResultSet resultSet = statement.executeQuery();
+                boolean user_found = false;
+
+                while(resultSet.next()){
+                    current_user.setCurrent_User(
+                            resultSet.getInt("user_id"),
+                            resultSet.getString("username"),
+                            resultSet.getString("firstname"),
+                            resultSet.getString("lastname"),
+                            resultSet.getString("email"),
+                            resultSet.getString("address"),
+                            resultSet.getString("gender"),
+                            (resultSet.getInt("isOwner") == 1)
+                    );
+
+                    System.out.println(current_user);
+                    user_found = true;
+                }
+
+                boolean finalUser_found = user_found;
+                runOnUiThread(()->{
+                    if (finalUser_found){
+                        Toast.makeText(getApplicationContext(), "Log-in Success!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Activity_log_in.this, MainActivity.class);
+                        startActivity(intent);
+                        clearForm();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Log-in unsuccessful! Username or password is incorrect", Toast.LENGTH_SHORT).show();
+                        clearForm();
+                    }
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            };
+        });
+    }
+
+    private void clearForm(){
+        etusername.setText("");
+        etpassword.setText("");
     }
 }
