@@ -201,6 +201,7 @@ public class HomeFragment extends Fragment {
     private void setUpItemModels(){
 //        items = dbManager.getItems();
 //        if (!items.isEmpty()) System.out.println("yey success");
+        List <Item> tempItems = new ArrayList<>();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()-> {
             try (Connection conn = SQLConnection.getConnection();
@@ -212,7 +213,7 @@ public class HomeFragment extends Fragment {
 
                 while (res.next()){
                     System.out.println("item_id: " + res.getInt("item_id"));
-                    items.add(new Item(
+                    tempItems.add(new Item(
                             res.getInt("item_id"),
                             res.getInt("user_id"),
                             res.getString("title"),
@@ -222,6 +223,10 @@ public class HomeFragment extends Fragment {
                             res.getDouble("price")
                     ));
                 }
+
+                getActivity().runOnUiThread(()->{
+                    items = tempItems;
+                });
             } catch (SQLException e) {
                 e.printStackTrace();
             }
