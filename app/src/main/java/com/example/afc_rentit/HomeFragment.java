@@ -230,6 +230,8 @@ public class HomeFragment extends Fragment {
 
                 getActivity().runOnUiThread(()->{
                     items = tempItems;
+                    // update everytime a new item is added
+                    item_adapter.notifyDataSetChanged();
                 });
             } catch (SQLException e) {
                 e.printStackTrace();

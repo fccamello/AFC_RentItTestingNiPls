@@ -41,7 +41,7 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         String desc = item.getDescription();
 
         holder.tv_title.setText(item.getTitle());
-        holder.tv_price.setText(String.valueOf(item.getPrice()));
+        holder.tv_price.setText("₱ " + String.valueOf(item.getPrice()));
         holder.tv_category.setText(item.getCategory());
 
         if(item.getDescription().length() > 20) {
@@ -98,6 +98,7 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
             tv_title = itemView.findViewById(R.id.item_title);
             tv_category = itemView.findViewById(R.id.item_category);
             tv_desc = itemView.findViewById(R.id.item_desc);
+
         }
     }
 

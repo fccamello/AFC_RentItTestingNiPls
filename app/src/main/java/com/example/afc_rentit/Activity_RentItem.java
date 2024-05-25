@@ -3,6 +3,8 @@ package com.example.afc_rentit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.afc_rentit.Database.SQLConnection;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +43,7 @@ public class Activity_RentItem extends AppCompatActivity {
     ImageView iv_itemImage;
     double price, totalAmount = 0.00;
     int totalDays = 0, s_day, s_month, s_year;
-    String owner, item_title, item_desc;
+    String owner, item_title, item_desc, imageUrl;
     int item_id, rent_id = -1;
     Current_User current_user = Current_User.getInstance();
 
@@ -249,10 +252,25 @@ public class Activity_RentItem extends AppCompatActivity {
                 boolean res1Success = false;
 
                 if (res1.next()){
+                     imageUrl = res1.getString("image");
                     price = res1.getDouble("price");
                     item_title = res1.getString("title");
                     item_desc = res1.getString("description");
                     owner = res1.getString("username");
+
+
+                    // FOR THE IMAGE
+                    new Thread(() -> {
+                        try {
+                            URL url = new URL(imageUrl);
+                            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                            runOnUiThread(() -> iv_itemImage.setImageBitmap(bitmap));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // Optionally set a placeholder or error image
+                            runOnUiThread(() -> iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
+                        }
+                    }).start();
 
                     res1Success = true;
                 }
