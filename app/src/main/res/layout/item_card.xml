@@ -25,7 +25,13 @@
                 android:id="@+id/item_image"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                app:srcCompat="@drawable/calculator" />
+               />
+
+            <TextView
+                android:id="@+id/item_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calculator" />
 
             <TextView
                 android:id="@+id/item_title"
@@ -46,5 +52,5 @@
                 android:text="for students" />
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>y
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,8 @@ package com.example.afc_rentit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.example.afc_rentit.Database.SQLConnection;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,6 +64,7 @@ public class Activity_View_Item_Details extends AppCompatActivity {
                     description = res.getString("description");
                     owner = res.getString("username");
                     address = res.getString("address");
+                    image = res.getString("image");
 
                     runOnUiThread(this::displayData);
                 }
@@ -76,6 +80,18 @@ public class Activity_View_Item_Details extends AppCompatActivity {
         tv_itemDesc.setText(description);
         tv_itemOwner.setText(owner);
         tv_itemAdd.setText(address);
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(image);
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                runOnUiThread(() -> iv_image.setImageBitmap(bitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Optionally set a placeholder or error image
+                runOnUiThread(() -> iv_image.setImageResource(R.drawable.round_add_photo_alternate_24));
+            }
+        }).start();
     }
 
     private void initializeViewItem() {

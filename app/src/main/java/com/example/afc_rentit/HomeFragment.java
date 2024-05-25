@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment {
         btnElectronic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                categoryList("Electronic");
+                categoryList("Electronics");
             }
         });
 
@@ -180,7 +180,7 @@ public class HomeFragment extends Fragment {
         }
 
         if(filteredList.isEmpty()) {
-            Toast.makeText(getContext(),"No education items found!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"No items found!", Toast.LENGTH_SHORT).show();
         } else {
             item_adapter.setFilteredList(filteredList);
         }
@@ -189,9 +189,13 @@ public class HomeFragment extends Fragment {
     private void categoryList(String category) {
         List<Item> categoryList = new ArrayList<>();
 
-        for(Item item : items) {
-            if(item.getCategory().equals(category)) {
-                categoryList.add(item);
+        for (Item item : items) {
+            String[] categories = item.getCategory().split(",");
+
+            for (String cat : categories) {
+                if (cat.trim().equals(category)) {
+                    categoryList.add(item);
+                }
             }
         }
 

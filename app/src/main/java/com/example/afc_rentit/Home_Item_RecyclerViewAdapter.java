@@ -2,6 +2,8 @@ package com.example.afc_rentit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.net.URL;
 import java.util.List;
 
 public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Item_RecyclerViewAdapter.MyViewHolder> {
@@ -38,6 +41,7 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         String desc = item.getDescription();
 
         holder.tv_title.setText(item.getTitle());
+        holder.tv_price.setText("₱ " + String.valueOf(item.getPrice()));
         holder.tv_category.setText(item.getCategory());
 
         if(item.getDescription().length() > 20) {
@@ -45,6 +49,21 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         }
         holder.tv_desc.setText(desc);
         // to do image, i don know how
+
+        //testing for the image - working
+        new Thread(() -> {
+            try {
+                URL url = new URL(item.getImage());
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                holder.itemView.post(() -> holder.iv_itemImage.setImageBitmap(bitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Optionally set a placeholder or error image
+                holder.itemView.post(() -> holder.iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
+            }
+        }).start();
+
+
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,11 +89,12 @@ public class Home_Item_RecyclerViewAdapter extends RecyclerView.Adapter<Home_Ite
         // similar to oncreate method sa activity files
 
         ImageView iv_itemImage;
-        TextView tv_title, tv_category, tv_desc;
+        TextView tv_price, tv_title,  tv_category, tv_desc;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             iv_itemImage = itemView.findViewById(R.id.item_image);
+            tv_price = itemView.findViewById(R.id.item_price);
             tv_title = itemView.findViewById(R.id.item_title);
             tv_category = itemView.findViewById(R.id.item_category);
             tv_desc = itemView.findViewById(R.id.item_desc);

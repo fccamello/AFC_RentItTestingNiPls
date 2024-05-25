@@ -59,8 +59,8 @@ public class DatabaseManager {
                         "user_id INT NOT NULL," +
                         "title VARCHAR (50) NOT NULL," +
                         "description VARCHAR (100) NOT NULL," +
-                        "image VARCHAR (50) NOT NULL," +
-                        "category VARCHAR (25) NOT NULL," +
+                        "image VARCHAR (300) NOT NULL," +
+                        "category VARCHAR (300) NOT NULL," +
                         "price DOUBLE NOT NULL," +
                         "isAvailable INT NOT NULL," +
                         "FOREIGN KEY (user_id) REFERENCES tbluser (user_id) ON DELETE CASCADE)";

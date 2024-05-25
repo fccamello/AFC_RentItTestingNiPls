@@ -1,100 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".activity_create_post">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="10dp">
 
-        <!-- Product Image -->
-        <ImageView
-            android:id="@+id/product_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:contentDescription="Product Image"
-            android:scaleType="centerCrop"
-            android:src="@drawable/round_add_photo_alternate_24" />
 
-        <!-- Button to Select Image -->
-        <Button
-            android:id="@+id/button_select_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="Select Image"
-            android:textColor="@android:color/white"/>
 
-        <!-- Title Input -->
-        <EditText
-            android:id="@+id/edit_text_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            android:inputType="text"
-            android:textColor="@android:color/black" />
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp">
 
-        <!-- Description Input -->
-        <EditText
-            android:id="@+id/edit_text_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:textColor="@android:color/black" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload Item for Rent"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:textColor="@color/lavender"/>
 
-        <!-- Category Checkboxes -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Category"
-            android:textStyle="bold" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/round_add_photo_alternate_24"
+                android:id="@+id/createImage"
+                android:layout_marginTop="10dp" />
 
-        <CheckBox
-            android:id="@+id/checkbox_education"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Education"
-            android:textColor="@android:color/black" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/createTitle"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="Enter Title"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/lavender"/>
 
-        <CheckBox
-            android:id="@+id/checkbox_entertainment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Entertainment"
-            android:textColor="@android:color/black" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/createDesc"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="Enter description"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/lavender"/>
 
-        <CheckBox
-            android:id="@+id/checkbox_electronics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Electronics"
-            android:textColor="@android:color/black" />
 
-        <!-- Price Input -->
-        <EditText
-            android:id="@+id/edit_text_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Price per day"
-            android:inputType="numberDecimal"
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:id="@+id/createPrice"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="Enter Price/day"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/lavender"/>
 
-            android:textColor="@android:color/black" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:id="@+id/Category"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:hint="Choose Category: "
+                android:gravity="start|center_vertical"
+                android:textColor="@color/lavender"/>
 
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/button_submit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Submit"
-            android:textColor="@android:color/white"/>
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/catEducation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Education"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:id="@+id/catEntertainment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entertainment"
+                android:textColor="@android:color/black" />
+
+            <CheckBox
+                android:id="@+id/catElectronics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Electronics"
+                android:textColor="@android:color/black" />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Post"
+                android:id="@+id/btnSave"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                app:cornerRadius = "20dp"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
 </ScrollView>
