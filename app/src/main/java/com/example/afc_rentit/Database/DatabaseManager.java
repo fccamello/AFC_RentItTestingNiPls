@@ -60,7 +60,7 @@ public class DatabaseManager {
                         "title VARCHAR (50) NOT NULL," +
                         "description VARCHAR (100) NOT NULL," +
                         "image VARCHAR (300) NOT NULL," +
-                        "category VARCHAR (25) NOT NULL," +
+                        "category VARCHAR (300) NOT NULL," +
                         "price DOUBLE NOT NULL," +
                         "isAvailable INT NOT NULL," +
                         "FOREIGN KEY (user_id) REFERENCES tbluser (user_id) ON DELETE CASCADE)";
@@ -92,9 +92,8 @@ public class DatabaseManager {
     }
 
     private final Current_User current_user = Current_User.getInstance();
-    public boolean insertUser(String firstName, String lastName, String gender, String email, String address, String username, String userType, String password) {
+    public boolean insertUser(String firstName, String lastName, String gender,String address,String contact_number, String email,  String username,  String password, String userType) {
         final boolean[] result = {true};
-        String contact_number = "09123456789";
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection c = SQLConnection.getConnection()) {

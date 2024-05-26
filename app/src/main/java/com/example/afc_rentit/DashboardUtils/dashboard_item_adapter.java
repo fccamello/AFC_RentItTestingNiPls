@@ -2,6 +2,8 @@ package com.example.afc_rentit.DashboardUtils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import com.example.afc_rentit.Current_User;
 import com.example.afc_rentit.Database.SQLConnection;
 import com.example.afc_rentit.R;
 
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -58,6 +61,18 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
         }
         holder.tv_desc.setText(desc);
         // to do image, i don know how
+
+        new Thread(() -> {
+            try {
+                URL url = new URL(item.getImage());
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                holder.itemView.post(() -> holder.iv_itemImage.setImageBitmap(bitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Optionally set a placeholder or error image
+                holder.itemView.post(() -> holder.iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
+            }
+        }).start();
 
         holder.tv_price.setText(String.valueOf(item.getPrice()));
 

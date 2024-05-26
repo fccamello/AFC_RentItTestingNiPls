@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,6 +17,14 @@
         android:layout_margin="30dp"
         app:cardCornerRadius="30dp"
         app:cardElevation="20dp">
+
+        <ScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,6 +107,17 @@
                     android:textColor="@color/black"/>
             </LinearLayout>
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/contact_number"
+                android:layout_marginTop="20dp"
+                android:padding="8dp"
+                android:hint="Contact Number"
+                android:drawableLeft="@drawable/round_email_24"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black"/>
+
             <TextView
                 android:layout_width="170dp"
                 android:layout_height="wrap_content"
@@ -151,6 +172,19 @@
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/address"
+                android:layout_marginTop="20dp"
+                android:padding="8dp"
+                android:hint="Address"
+                android:drawableLeft="@drawable/round_email_24"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black"/>
+
+
+
 
             <EditText
                 android:layout_width="match_parent"
@@ -200,6 +234,7 @@
 
         </LinearLayout>
 
+        </ScrollView>
     </androidx.cardview.widget.CardView>
 
 </LinearLayout>

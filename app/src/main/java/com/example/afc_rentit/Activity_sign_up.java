@@ -15,10 +15,10 @@ import com.example.afc_rentit.Database.DatabaseManager;
 
 public class Activity_sign_up extends AppCompatActivity {
 
-    private EditText etfname, etlastname, etemail, etusername, etpassword;
+    private EditText etfname, etlastname, etemail, etusername, etpassword, etaddress, etcontactnum;
     private TextView loginredirect;
 
-    private RadioGroup userTypeRadioGroup, genderRadioGroup;
+    private RadioButton rb_buyer, rb_seller, rbmale, rbfemale, rbothers;
     private Button btnsignUp;
     DatabaseManager dbManager = DatabaseManager.getInstance();
 
@@ -32,50 +32,59 @@ public class Activity_sign_up extends AppCompatActivity {
         etemail = findViewById(R.id.signup_email);
         etusername = findViewById(R.id.signup_username);
         etpassword = findViewById(R.id.signup_password);
-        userTypeRadioGroup = findViewById(R.id.rb_usertype);
-        genderRadioGroup = findViewById(R.id.gender_radio_group);
+        etcontactnum = findViewById(R.id.contact_number);
+        etaddress = findViewById(R.id.address);
+        rb_seller = findViewById(R.id.rb_seller);
+        rb_buyer = findViewById(R.id.rb_buyer);
+        rbmale = findViewById(R.id.rbmale);
+        rbfemale = findViewById(R.id.rbfemale);
+        rbothers = findViewById(R.id.rbothers);
+
+
         btnsignUp = findViewById(R.id.signup_button);
 
-        btnsignUp.setOnClickListener(view -> {insertUsers();});
+        btnsignUp.setOnClickListener(view -> insertUsers());
 
         loginredirect = findViewById(R.id.loginredirect);
-        loginredirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Activity_sign_up.this, Activity_log_in.class);
-                startActivity(intent);
-            }
+        loginredirect.setOnClickListener(v -> {
+            Intent intent = new Intent(Activity_sign_up.this, Activity_log_in.class);
+            startActivity(intent);
         });
-
-
     }
 
-    public void insertUsers(){
+    public void insertUsers() {
 
         String firstName = etfname.getText().toString().trim();
         String lastName = etlastname.getText().toString().trim();
         String email = etemail.getText().toString().trim();
         String username = etusername.getText().toString().trim();
         String password = etpassword.getText().toString().trim();
+        String addresss = etaddress.getText().toString().trim();
+        String contactnum = etcontactnum.getText().toString().trim();
 
-        // Get selected user type
-        RadioButton userTypeRadioButton = findViewById(userTypeRadioGroup.getCheckedRadioButtonId());
-//        String userType = userTypeRadioButton.getText().toString();
-        String userType = "Renter";
+        String userType = "Renter"; // Default to Renter
+        if (rb_seller.isChecked()) {
+            userType = "Owner";
+        }
+
         // Get selected gender
-        RadioButton genderRadioButton = findViewById(genderRadioGroup.getCheckedRadioButtonId());
-        String gender = genderRadioButton.getText().toString();
+        String gender;
+        if (rbfemale.isChecked()){
+            gender = "Female";
+        }
+        else if (rbmale.isChecked()){
+            gender="Male";
+        }
+        else{
+            gender="Others";
+        }
 
-        boolean user_inserted = dbManager.insertUser(firstName, lastName, gender, email, "address", username, userType, password);
 
-        if (user_inserted){
-            Intent intent1 = new Intent(
-              Activity_sign_up.this,
-                    MainActivity.class
-            );
+        boolean user_inserted = dbManager.insertUser(firstName, lastName, gender,addresss,contactnum,email,username,password, userType);
 
+        if (user_inserted) {
+            Intent intent1 = new Intent(Activity_sign_up.this, MainActivity.class);
             startActivity(intent1);
         }
     }
-
 }

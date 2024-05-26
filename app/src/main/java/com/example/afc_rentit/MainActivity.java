@@ -10,8 +10,16 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.afc_rentit.Database.DatabaseManager;
+import com.example.afc_rentit.Database.SQLConnection;
 import com.example.afc_rentit.databinding.ActivityMainBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private final DashboardFragment dashboardFragment = new DashboardFragment();
     private final NotificationFragment notificationFragment = new NotificationFragment();
     private final ProfileFragment profileFragment = new ProfileFragment();
+    Current_User current_user = Current_User.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +71,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        checkOwnerStatus();
+
     }
+
+
+
+    private void checkOwnerStatus() {
+        int userId = current_user.getUser_id(); // Assuming currentUser is an instance variable or accessible through other means
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection conn = SQLConnection.getConnection();
+                 PreparedStatement pStmt = conn.prepareStatement(
+                         "SELECT isOwner FROM tbluser WHERE user_id = ?"
+                 )) {
+                pStmt.setInt(1, userId);
+
+                ResultSet resultSet = pStmt.executeQuery();
+                if (resultSet.next()) {
+                    int isOwner = resultSet.getInt("isOwner");
+                    if (isOwner == 0) {
+                        // If the user is not an owner, hide the floating action button
+                        runOnUiThread(() -> createPost.setVisibility(View.GONE));
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 
     private void replaceFragment(Fragment fragment) {
 //        getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, fragment).commit();
