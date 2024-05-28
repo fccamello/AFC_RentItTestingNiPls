@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "34727167819",
+    "project_id": "afc-rentit",
+    "storage_bucket": "afc-rentit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34727167819:android:8266c96a3c3cfa58a98ace",
+        "android_client_info": {
+          "package_name": "com.example.afc_rentit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhAenv9Pg6I_-PkxFa0kTsD12JgTyWfXk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
