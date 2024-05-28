@@ -1,6 +1,7 @@
 package com.example.afc_rentit;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.afc_rentit.Database.SQLConnection;
 
@@ -19,20 +23,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class NotificationFragment extends Fragment {
 
     List<NotificationItem> notificationItems = new ArrayList<>();
     RecyclerView notificationContainer;
     NotificationAdapter notificationAdapter;
+
+    NotificationAdapterBuyer notifbuyeradapter;
     Current_User currentUser = Current_User.getInstance();
 
     private static final String ARG_PARAM1 = "param1";
@@ -62,6 +65,7 @@ public class NotificationFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setupNotificationModels();
+
     }
 
     @Override
@@ -79,90 +83,95 @@ public class NotificationFragment extends Fragment {
         notificationContainer.setLayoutManager(new LinearLayoutManager(getContext()));
         notificationContainer.setHasFixedSize(true);
 
-        notificationAdapter = new NotificationAdapter(getContext(), notificationItems, this::updateApprovalStatus);
-        notificationContainer.setAdapter(notificationAdapter);
-    }
-
-        private void setupNotificationModels() {
-            List<NotificationItem> tempNotificationItems = new ArrayList<>();
-
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.execute(() -> {
-                try (Connection conn = SQLConnection.getConnection();
-                     PreparedStatement pStmt = conn.prepareStatement(
-                             "SELECT r.rent_id, r.item_id, r.user_id, r.isApproved, i.title, i.user_id, i.price, r.durationCategory, r.requestDate, i.image " +
-                                     "FROM tblrentrequest r " +
-                                     "JOIN tblitem i ON r.item_id = i.item_id " +
-                                     "WHERE r.isApproved = -1 AND r.user_id = ?"
-                     )) {
-                    pStmt.setInt(1, currentUser.getUser_id());
-
-                    ResultSet res = pStmt.executeQuery();
-
-                    while (res.next()) {
-                        int ownerId = res.getInt("i.user_id");
-                        int rentId = res.getInt("rent_id");
-                        int itemId = res.getInt("item_id");
-                        int userId = res.getInt("r.user_id");
-                        int isApproved = res.getInt("isApproved");
-                        String title = res.getString("title");
-                        double pricePerDay = res.getDouble("price");
-                        String durationCategory = res.getString("durationCategory");
-                        String startDateStr = res.getString("requestDate");
-                        String imageUrl = res.getString("image");
-
-                        int durationDays = calculateDurationInDays(durationCategory);
-
-                        // Calculate end date and total price
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        Date startDate = dateFormat.parse(startDateStr);
-                        long endDateMillis = startDate.getTime() + TimeUnit.DAYS.toMillis(durationDays);
-                        Date endDate = new Date(endDateMillis);
-                        String endDateStr = dateFormat.format(endDate);
-                        double totalPrice = pricePerDay * durationDays;
-
-                        NotificationItem notificationItem = new NotificationItem(
-                                rentId, itemId, userId, isApproved, title, pricePerDay, durationDays, startDateStr, endDateStr, totalPrice, imageUrl,ownerId
-                        );
-
-                        tempNotificationItems.add(notificationItem);
-                    }
-                } catch (SQLException | ParseException e) {
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(() -> {
-                    notificationItems.clear();
-                    notificationItems.addAll(tempNotificationItems);
-                    notificationAdapter.notifyDataSetChanged();
-                });
-            });
-        }
-
-    private int calculateDurationInDays(String durationCategory) {
-        // Assuming durationCategory can be "days", "weeks", or "months"
-        switch (durationCategory) {
-            case "days":
-                return 1; // 1 day
-            case "weeks":
-                return 7; // 1 week
-            case "months":
-                return 30; // 1 month
-            default:
-                return 0; // Handle invalid category
+        if (!Current_User.getInstance().isOwner()) {
+            notifbuyeradapter = new NotificationAdapterBuyer(getContext(), notificationItems, this);
+            notificationContainer.setAdapter(notifbuyeradapter);
+        } else {
+            notificationAdapter = new NotificationAdapter(getContext(), notificationItems, this);
+            notificationContainer.setAdapter(notificationAdapter);
         }
     }
 
-    private void updateApprovalStatus(int rentId, int status) {
+    private void setupNotificationModels() {
+        List<NotificationItem> tempNotificationItems = new ArrayList<>();
+
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection conn = SQLConnection.getConnection();
                  PreparedStatement pStmt = conn.prepareStatement(
+                         "SELECT r.rent_id, r.item_id, r.user_id, r.isApproved, r.duration, i.title, " +
+                                 "i.user_id AS owner_id, i.price, r.durationCategory, r.endRentDate, " +
+                                 "r.requestDate, i.image " +
+                                 "FROM tblrentrequest r " +
+                                 "JOIN tblitem i ON r.item_id = i.item_id " +
+                                 "WHERE r.isApproved = -1 AND i.user_id = ?"
+                 )) {
+                pStmt.setInt(1, currentUser.getUser_id());
+
+                ResultSet res = pStmt.executeQuery();
+
+                while (res.next()) {
+                    int ownerId = res.getInt("owner_id");
+                    int rentId = res.getInt("rent_id");
+                    int itemId = res.getInt("item_id");
+                    int userId = res.getInt("user_id");
+                    int isApproved = res.getInt("isApproved");
+                    String title = res.getString("title");
+                    double pricePerDay = res.getDouble("price");
+                    String durationCategory = res.getString("durationCategory");
+                    String startDateStr = res.getString("requestDate");
+                    String imageUrl = res.getString("image");
+                    int duration = res.getInt("duration");
+                    String edate = res.getString("endRentDate");
+
+                    if ("months".equals(durationCategory)) {
+                        duration *= 30;
+                    } else if ("weeks".equals(durationCategory)) {
+                        duration *= 7;
+                    }
+
+                    double totalPrice = pricePerDay * duration;
+
+                    NotificationItem notificationItem = new NotificationItem(
+                            rentId, itemId, userId, isApproved, title, pricePerDay,
+                            duration, startDateStr, edate, totalPrice, imageUrl, ownerId);
+
+                    tempNotificationItems.add(notificationItem);
+
+                    getActivity().runOnUiThread(() -> {
+                        notificationItems.clear();
+                        notificationItems.addAll(tempNotificationItems);
+                        notificationAdapter.notifyDataSetChanged();
+                    });
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        });
+    }
+
+    public void updateApprovalStatus(int rentId, int status, int item_id) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection conn = SQLConnection.getConnection();
+                 PreparedStatement pstmt2 = conn.prepareStatement("UPDATE tblitem SET isAvailable = ? WHERE item_id = ?");
+
+                 PreparedStatement pStmt = conn.prepareStatement(
                          "UPDATE tblrentrequest SET isApproved = ? WHERE rent_id = ?"
                  )) {
+
+                pstmt2.setInt(1, 0);
+                pstmt2.setInt(2, item_id);
+
                 pStmt.setInt(1, status);
                 pStmt.setInt(2, rentId);
+
                 pStmt.executeUpdate();
+                pstmt2.executeUpdate();
+
+                notifyBuyer(rentId, status);
 
                 // Update local data and notify adapter
                 getActivity().runOnUiThread(() -> {
@@ -179,4 +188,78 @@ public class NotificationFragment extends Fragment {
             }
         });
     }
+
+    private void notifyBuyer(int rentId, int status) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection conn = SQLConnection.getConnection();
+                 PreparedStatement pStmt = conn.prepareStatement(
+                         "SELECT user_id FROM tblrentrequest WHERE rent_id = ?"
+                 )) {
+                pStmt.setInt(1, rentId);
+                ResultSet rs = pStmt.executeQuery();
+
+                if (rs.next()) {
+                    int buyerId = rs.getInt("user_id");
+
+                    // Send notification to buyer
+                    String notificationMessage = (status == 1) ? "Your request has been approved." : "Your request has been rejected.";
+                    sendNotificationToBuyer(buyerId, notificationMessage);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void sendNotificationToBuyer(int buyerId, String message) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection conn = SQLConnection.getConnection();
+                 PreparedStatement pStmt = conn.prepareStatement(
+                         "INSERT INTO notifications (user_id, message) VALUES (?, ?)"
+                 )) {
+                pStmt.setInt(1, buyerId);
+                pStmt.setString(2, message);
+                pStmt.executeUpdate();
+
+                getActivity().runOnUiThread(() -> {
+                    Toast.makeText(getContext(), "Notification sent to Buyer (ID: " + buyerId + "): " + message, Toast.LENGTH_SHORT).show();
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    //ambot ani oi !!!!!!!!!!
+//        public List<Notifications> getNotificationsForUser() {
+//        List<Notifications> notifications = new ArrayList<>();
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(() -> {
+//            try (Connection conn = SQLConnection.getConnection();
+//                 PreparedStatement pStmt = conn.prepareStatement(
+//                         "SELECT message, FROM notifications WHERE user_id = ?"
+//                 )) {
+//                pStmt.setInt(1, NotificationItem.getUserId());
+//                ResultSet rs = pStmt.executeQuery();
+//
+//                while (rs.next()) {
+//                    int id = rs.getInt("id");
+//                    String message = rs.getString("message");
+//
+//                    Notifications notifs = new Notifications(id, message);
+//                    notifications.add(notifs);
+//                }
+//
+//
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        return notifications;
+//    }
+//
+
+
 }

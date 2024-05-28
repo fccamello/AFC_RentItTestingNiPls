@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,20 +22,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     private Context context;
     private List<NotificationItem> notificationItems;
-
-    private OnApprovalStatusChangedListener listener;
-
+    private NotificationFragment fragment;
 
 
 
-    public interface OnApprovalStatusChangedListener {
-        void onApprovalStatusChanged(int rentId, int status);
-    }
 
-    public NotificationAdapter(Context context, List<NotificationItem> notificationItems, OnApprovalStatusChangedListener listener) {
+    public NotificationAdapter(Context context, List<NotificationItem> notificationItems, NotificationFragment fragment) {
         this.context = context;
         this.notificationItems = notificationItems;
-        this.listener = listener;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -42,47 +38,49 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.notification_item_card, parent, false);
         System.out.println("nisud here");
+
+        View notificationView = LayoutInflater.from(context).inflate(R.layout.buyer_notification_item_card, parent, false);
+
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         NotificationItem item = notificationItems.get(position);
-        System.out.println("CURR USER" + Current_User.getInstance().getUser_id());
-        System.out.println("OWNER SA ITEM: " + item.getOwnerId());
+        holder.title.setText(item.getTitle());
+        holder.duration.setText(String.valueOf(item.getDurationDays()) + " day/s");
+        holder.price.setText("₱" + String.valueOf(item.getTotalPrice()));
+        holder.startDate.setText("Start: " + item.getStartDate());
+        holder.endDate.setText("End: " + item.getEndDate());
 
-        if (item.getOwnerId() == Current_User.getInstance().getUser_id()) {
-            holder.title.setText(item.getTitle());
-            holder.duration.setText(String.valueOf(item.getDurationDays()) + " day/s");
-            holder.price.setText("₱" + String.valueOf(item.getTotalPrice()));
-            holder.startDate.setText("Start: " + item.getStartDate());
-            holder.endDate.setText("End: " + item.getEndDate());
+        new Thread(() -> {
+            try {
+                URL url = new URL(item.getImage());
+                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                holder.itemView.post(() -> holder.image.setImageBitmap(bitmap));
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Optionally set a placeholder or error image
+                holder.itemView.post(() -> holder.image.setImageResource(R.drawable.round_add_photo_alternate_24));
+            }
+        }).start();
 
-            new Thread(() -> {
-                try {
-                    URL url = new URL(item.getImage());
-                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    holder.itemView.post(() -> holder.image.setImageBitmap(bitmap));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Optionally set a placeholder or error image
-                    holder.itemView.post(() -> holder.image.setImageResource(R.drawable.round_add_photo_alternate_24));
-                }
-            }).start();
+        holder.approveButton.setOnClickListener(v -> {
+            //para mawala after ug approve
+            notificationItems.remove(position);
+            fragment.updateApprovalStatus(item.getRentId(), 1, item.getItemId());
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, notificationItems.size());
+            Toast.makeText(context, "You have approved the rent request!", Toast.LENGTH_SHORT).show();
 
-
-            holder.approveButton.setOnClickListener(v -> listener.onApprovalStatusChanged(item.getRentId(), 1));
-            holder.declineButton.setOnClickListener(v -> listener.onApprovalStatusChanged(item.getRentId(), 0));
-        } else {
-            // If the user_id does not match, hide the itemView
-            System.out.println("wala nisud");
-            holder.itemView.setVisibility(View.GONE);
-            // Optionally, you can also set the itemView's height to 0 to ensure it doesn't take up space
-            ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
-            params.height = 0;
-            holder.itemView.setLayoutParams(params);
-        }
+        });
+        holder.declineButton.setOnClickListener(v -> {
+            notificationItems.remove(position);
+            notifyItemRemoved(position);
+            fragment.updateApprovalStatus(item.getRentId(), 0, item.getItemId());
+            notifyItemRangeChanged(position, notificationItems.size());
+            Toast.makeText(context, "You have rejected the rent request!", Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
@@ -107,4 +105,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             declineButton = itemView.findViewById(R.id.btn_decline);
         }
     }
+
+
 }

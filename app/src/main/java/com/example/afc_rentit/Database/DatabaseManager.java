@@ -82,6 +82,15 @@ public class DatabaseManager {
                         "FOREIGN KEY (user_id) REFERENCES tblUser (user_id) ON DELETE CASCADE)";
                 stmt.execute(createtblRentRequest);
 
+
+                String createtblNotif = "CREATE TABLE IF NOT EXISTS tblNotifs(" +
+                        "notif_id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "buyer_user_id INT NOT NULL," +
+                        "receiver_user_id INT NOT NULL" +
+                        "message VARCHAR (255) NOT NULL)";
+                stmt.execute(createtblNotif);
+
+
                 c.commit();
                 System.out.println(SQLConnection.DBName);
                 System.out.println("Database with TABLES created successfully.");
