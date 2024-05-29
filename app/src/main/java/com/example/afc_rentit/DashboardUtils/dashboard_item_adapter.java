@@ -86,6 +86,7 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
             if (item.isAvailable == 0){
                 holder.btnMakeAvail.setText("Add to listing");
                 holder.btnMakeAvail.setVisibility(View.VISIBLE);
+                holder.btnMakeUnavail.setVisibility(View.GONE);
                 holder.btnMakeAvail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -98,9 +99,6 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
                                 activity.runOnUiThread(()->{
                                     Toast.makeText(activity, item.getTitle() + " is now available!", Toast.LENGTH_SHORT).show();
                                 });
-
-                                holder.btnMakeAvail.setVisibility(View.GONE);
-                                notifyItemChanged(position);
                             }
                         });
                     }
@@ -108,6 +106,7 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
             } else {
                 holder.btnMakeUnavail.setText("Remove from Listing");
                 holder.btnMakeUnavail.setVisibility(View.VISIBLE);
+                holder.btnMakeAvail.setVisibility(View.GONE);
                 holder.btnMakeUnavail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -119,7 +118,7 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
                                 AppCompatActivity activity = (AppCompatActivity) context;
 
                                 activity.runOnUiThread(()->{
-                                    Toast.makeText(context, item.getTitle() + " is now unavailable!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, item.getTitle() + " is now unavailable!", Toast.LENGTH_SHORT).show();
                                 });
                             }
                         });
@@ -177,7 +176,6 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
     }
 
     private int manageItemToListing(int item_id, int isAvailable) {
-        final int[] res = new int[1];
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()->{
             try(Connection conn = SQLConnection.getConnection();
@@ -187,13 +185,13 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
                 pstmt.setInt(1, isAvailable);
                 pstmt.setInt(2, item_id);
 
-                res[0] = pstmt.executeUpdate();
+                pstmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
 
-        return res[0];
+        return 1;
     }
 
     private boolean returnItem (int rent_id, int item_id, int owner_id){
@@ -245,21 +243,52 @@ public class dashboard_item_adapter extends RecyclerView.Adapter<dashboard_item_
         return true;
     }
 
-    public void makeUnAvailShow(Button btnMakeUnavail, int item_id, String item_title){
+    public void makeUnAvailShow(Button btnMakeUnavail, Button btnMakeAvail, int item_id, String item_title){
         btnMakeUnavail.setText("Remove from Listing");
         btnMakeUnavail.setVisibility(View.VISIBLE);
+        btnMakeAvail.setVisibility(View.GONE);
         btnMakeUnavail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int res = manageItemToListing(item_id, 0);
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                executorService.execute(()->{
+                    int res = manageItemToListing(item_id, 0);
 
-                if (res == 1){
-                    AppCompatActivity activity = (AppCompatActivity) context;
+                    if (res == 1){
+                        AppCompatActivity activity = (AppCompatActivity) context;
 
-//                    activity.runOnUiThread(()->{
-                    Toast.makeText(context, item_title + " is now unavailable!", Toast.LENGTH_SHORT).show();
-//                    });
-                }
+                        activity.runOnUiThread(()->{
+                            Toast.makeText(activity, item_title + " is now unavailable!", Toast.LENGTH_SHORT).show();
+
+                            makeAvailShow(btnMakeUnavail, btnMakeAvail, item_id, item_title);
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    public void makeAvailShow(Button btnMakeUnavail, Button btnMakeAvail, int item_id, String item_title){
+        btnMakeAvail.setText("Add to Listing");
+        btnMakeUnavail.setVisibility(View.GONE);
+        btnMakeAvail.setVisibility(View.VISIBLE);
+        btnMakeUnavail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                executorService.execute(()->{
+                    int res = manageItemToListing(item_id, 0);
+
+                    if (res == 1){
+                        AppCompatActivity activity = (AppCompatActivity) context;
+
+                        activity.runOnUiThread(()->{
+                            Toast.makeText(activity, item_title + " is now available!", Toast.LENGTH_SHORT).show();
+
+                            makeUnAvailShow(btnMakeUnavail, btnMakeAvail, item_id, item_title);
+                        });
+                    }
+                });
             }
         });
     }

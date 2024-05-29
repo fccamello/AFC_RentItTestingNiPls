@@ -35,7 +35,9 @@
                 android:layout_weight="1"
                 android:gravity="center|center_horizontal|left|center_vertical"
                 android:text="Rent Checkout"
-                android:textSize="30sp" />
+                android:textColor="@color/lavender"
+                android:textSize="30sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <ScrollView
@@ -287,8 +289,9 @@
                 android:id="@+id/btnConfirmRent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:backgroundTint="@color/lavender"
                 android:text="Request Rent"
-                app:cornerRadius="0dp" />
+                app:cornerRadius="15dp" />
         </LinearLayout>
 
     </LinearLayout>

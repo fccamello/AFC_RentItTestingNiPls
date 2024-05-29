@@ -127,7 +127,7 @@ public class DatabaseManager {
                         ResultSet res = statement.getGeneratedKeys();
                         res.next();
                         int user_id = res.getInt(1);
-                        current_user.setCurrent_User(user_id, username, firstName, lastName, email, address, gender, (isOwner == 1));
+                        current_user.setCurrent_User(user_id, username, firstName, lastName, email, address, contact_number, gender, (isOwner == 1));
                         System.out.println(current_user);
                     } else {
                         System.out.println("Failed to insert user.");
@@ -163,6 +163,7 @@ public class DatabaseManager {
                             resultSet.getString("lastname"),
                             resultSet.getString("email"),
                             resultSet.getString("address"),
+                            resultSet.getString("contact_number"),
                             resultSet.getString("gender"),
                             (resultSet.getInt("isOwner") == 1)
                     );

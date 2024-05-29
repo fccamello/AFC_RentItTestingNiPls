@@ -169,7 +169,8 @@ public class DashboardFragment extends Fragment {
             }
 
             getActivity().runOnUiThread(()->{
-                items = temp_items;
+                items.clear();
+                items.addAll(temp_items);
                 System.out.println("dashboard items: " + items.size());
                 item_adapter.notifyDataSetChanged();
             });

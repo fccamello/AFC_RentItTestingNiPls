@@ -2,6 +2,7 @@ package com.example.afc_rentit;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -132,6 +133,8 @@ public class NotificationFragment extends Fragment {
                 // Show items list when item button is clicked
                 notificationContainer.setVisibility(View.VISIBLE);
                 notificationMessageContainer.setVisibility(View.GONE);
+                btni.setBackgroundColor(Color.parseColor("#626FD5"));
+                btnm.setBackgroundColor(Color.parseColor("#8692F7"));
                 System.out.println(" na click ang items");
             }
         });
@@ -141,6 +144,8 @@ public class NotificationFragment extends Fragment {
             public void onClick(View v) {
                 notificationMessageContainer.setVisibility(View.VISIBLE);
                 notificationContainer.setVisibility(View.GONE);
+                btnm.setBackgroundColor(Color.parseColor("#626FD5"));
+                btni.setBackgroundColor(Color.parseColor("#8692F7"));
                 System.out.println("na click ang message");
             }
         });

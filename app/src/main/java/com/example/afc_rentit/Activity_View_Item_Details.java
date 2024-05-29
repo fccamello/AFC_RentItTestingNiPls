@@ -127,5 +127,10 @@ public class Activity_View_Item_Details extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Current_User currentUser = Current_User.getInstance();
+
+        if (currentUser.isOwner()){
+            btnRentItem.setVisibility(View.GONE);
+        }
     }
 }

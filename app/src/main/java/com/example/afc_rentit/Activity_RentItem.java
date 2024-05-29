@@ -3,8 +3,6 @@ package com.example.afc_rentit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.afc_rentit.Database.SQLConnection;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +42,8 @@ public class Activity_RentItem extends AppCompatActivity {
     double price, totalAmount = 0.00;
     int totalDays = 0, s_day, s_month, s_year;
     String owner, item_title, item_desc, imageUrl;
-    int item_id, rent_id = -1;
+    int item_id;
+    boolean rentRequestNotChecked = true;
     Current_User current_user = Current_User.getInstance();
 
     @Override
@@ -76,10 +74,10 @@ public class Activity_RentItem extends AppCompatActivity {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(()->{
             try (Connection conn = SQLConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "INSERT INTO tblRentRequest (item_id, user_id, requestDate, durationCategory, duration, endRentDate, modeOfDelivery, totalAmount)" +
-                                "VALUES (?,?,?,?,?,?,?,?)"
-                )) {
+                 PreparedStatement pstmt = conn.prepareStatement(
+                         "INSERT INTO tblRentRequest (item_id, user_id, requestDate, durationCategory, duration, endRentDate, modeOfDelivery, totalAmount)" +
+                                 "VALUES (?,?,?,?,?,?,?,?)"
+                 )) {
 
                 pstmt.setInt(1, item_id);
                 pstmt.setInt(2, current_user.getUser_id());
@@ -243,7 +241,7 @@ public class Activity_RentItem extends AppCompatActivity {
                                  "WHERE i.user_id = u.user_id AND item_id = ?"
                  );
                  PreparedStatement rentStmt = conn.prepareStatement(
-                         "SELECT rent_id FROM tblRentRequest WHERE item_id = ? AND user_id = ?"
+                         "SELECT rent_id FROM tblRentRequest WHERE item_id = ? AND user_id = ? AND isApproved = -1"
                  )) {
 
                 ItemStmt.setInt(1, item_id);
@@ -253,25 +251,11 @@ public class Activity_RentItem extends AppCompatActivity {
                 boolean res1Success = false;
 
                 if (res1.next()){
-                     imageUrl = res1.getString("image");
+                    imageUrl = res1.getString("image");
                     price = res1.getDouble("price");
                     item_title = res1.getString("title");
                     item_desc = res1.getString("description");
                     owner = res1.getString("username");
-
-
-                    // FOR THE IMAGE
-//                    new Thread(() -> {
-//                        try {
-//                            URL url = new URL(imageUrl);
-//                            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//                            runOnUiThread(() -> iv_itemImage.setImageBitmap(bitmap));
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            // Optionally set a placeholder or error image
-//                            runOnUiThread(() -> iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
-//                        }
-//                    }).start();
 
                     runOnUiThread(()->{
                         Glide.with(this)
@@ -288,18 +272,19 @@ public class Activity_RentItem extends AppCompatActivity {
 
                 ResultSet res2 = rentStmt.executeQuery();
 
-                if (res2.next()){
-                    rent_id = res2.getInt("rent_id");
+                if (!res2.next()){
+                    rentRequestNotChecked = false;
                 }
 
                 if (res1Success){
                     runOnUiThread(()->{
                         displayItem();
-//                        if (rent_id != -1){
+
+                        if (rentRequestNotChecked){
 //                            rentDisabled();
-//                            Toast.makeText(this, "You have already requested to rent this item. Please wait for confirmation.", Toast.LENGTH_LONG).show();
-//                            finish();
-//                        }
+                            Toast.makeText(this, "You have already requested to rent this item. Please wait for confirmation.", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
                     });
                 }
             } catch (SQLException e) {

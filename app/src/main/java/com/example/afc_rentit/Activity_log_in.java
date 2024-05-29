@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,7 +41,7 @@ public class Activity_log_in extends AppCompatActivity {
         signupredirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Activity_log_in.this, Activity_sign_up.class);
+                Intent intent = new Intent(Activity_log_in.this, Activity_InitialSignUp.class);
                 startActivity(intent);
             }
         });
@@ -50,6 +51,8 @@ public class Activity_log_in extends AppCompatActivity {
             public void onClick(View v) {
                 if (etusername.getText().length() != 0 && etpassword.getText().length() != 0){
                     validateUsers();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Empty log-in fields", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -65,7 +68,7 @@ public class Activity_log_in extends AppCompatActivity {
             Current_User current_user = Current_User.getInstance();
 
             try (Connection connection = SQLConnection.getConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM tblUser WHERE username = ? AND password = ?")) {
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM tbluser WHERE username = ? AND password = ?")) {
                 statement.setString(1, username);
                 statement.setString(2, password);
 
@@ -80,6 +83,7 @@ public class Activity_log_in extends AppCompatActivity {
                             resultSet.getString("lastname"),
                             resultSet.getString("email"),
                             resultSet.getString("address"),
+                            resultSet.getString("contact_number"),
                             resultSet.getString("gender"),
                             (resultSet.getInt("isOwner") == 1)
                     );

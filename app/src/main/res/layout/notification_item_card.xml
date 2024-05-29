@@ -1,12 +1,15 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_margin="20dp"
     android:padding="8dp">
 
     <ImageView
@@ -58,14 +61,18 @@
             android:id="@+id/btn_approve"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Approve" />
+            android:backgroundTint="@color/lavender"
+            android:text="Approve"
+            app:cornerRadius="15dp" />
 
         <Button
             android:id="@+id/btn_decline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Decline" />
+            android:backgroundTint="#626FD5"
+            android:text="Decline"
+            app:cornerRadius="15dp" />
     </LinearLayout>
 
 </LinearLayout>

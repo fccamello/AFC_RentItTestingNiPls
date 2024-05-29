@@ -9,7 +9,7 @@ public class SQLConnection {
 //    public static final String IP = "172.20.10.2"; //Fria secret IP
     public static final String IP = "172.20.10.4"; //fria house ip
     public static final String URL = "jdbc:mysql://" + IP + ":3306/";
-    public static String DBName = "";
+    public static String DBName = "dbrentit";
     public static final String USERNAME = "AFC";
     public static final String PASSWORD = "afcrentit";
     public static Connection getConnection (){

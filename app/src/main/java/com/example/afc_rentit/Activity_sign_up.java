@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.afc_rentit.Database.DatabaseManager;
 
@@ -19,6 +20,7 @@ public class Activity_sign_up extends AppCompatActivity {
     private TextView loginredirect;
 
     private RadioButton rb_buyer, rb_seller, rbmale, rbfemale, rbothers;
+    private Intent intent;
     private Button btnsignUp;
     DatabaseManager dbManager = DatabaseManager.getInstance();
 
@@ -29,38 +31,38 @@ public class Activity_sign_up extends AppCompatActivity {
 
         etfname = findViewById(R.id.signup_firstname);
         etlastname = findViewById(R.id.signup_lastname);
-        etemail = findViewById(R.id.signup_email);
-        etusername = findViewById(R.id.signup_username);
-        etpassword = findViewById(R.id.signup_password);
         etcontactnum = findViewById(R.id.contact_number);
         etaddress = findViewById(R.id.address);
+
         rb_seller = findViewById(R.id.rb_seller);
         rb_buyer = findViewById(R.id.rb_buyer);
+
         rbmale = findViewById(R.id.rbmale);
         rbfemale = findViewById(R.id.rbfemale);
         rbothers = findViewById(R.id.rbothers);
-
 
         btnsignUp = findViewById(R.id.signup_button);
 
         btnsignUp.setOnClickListener(view -> insertUsers());
 
-        loginredirect = findViewById(R.id.loginredirect);
-        loginredirect.setOnClickListener(v -> {
-            Intent intent = new Intent(Activity_sign_up.this, Activity_log_in.class);
-            startActivity(intent);
-        });
     }
 
     public void insertUsers() {
+        intent = getIntent();
 
         String firstName = etfname.getText().toString().trim();
         String lastName = etlastname.getText().toString().trim();
-        String email = etemail.getText().toString().trim();
-        String username = etusername.getText().toString().trim();
-        String password = etpassword.getText().toString().trim();
-        String addresss = etaddress.getText().toString().trim();
+
+        String email = intent.getStringExtra("email-key");
+        String username = intent.getStringExtra("username-key");
+        String password = intent.getStringExtra("password-key");
+
+        String address = etaddress.getText().toString().trim();
         String contactnum = etcontactnum.getText().toString().trim();
+
+        System.out.println("email" +email);
+        System.out.println("username " +username);
+        System.out.println("password " + password);
 
         String userType = "Renter"; // Default to Renter
         if (rb_seller.isChecked()) {
@@ -79,11 +81,16 @@ public class Activity_sign_up extends AppCompatActivity {
             gender="Others";
         }
 
+        if(firstName.isEmpty() || lastName.isEmpty() || address.isEmpty() || contactnum.isEmpty() || userType.isEmpty() || gender.isEmpty()) {
+            Toast.makeText(getApplicationContext(),"Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        boolean user_inserted = dbManager.insertUser(firstName, lastName, gender,addresss,contactnum,email,username,password, userType);
+
+        boolean user_inserted = dbManager.insertUser(firstName, lastName, gender,address,contactnum,email,username,password, userType);
 
         if (user_inserted) {
-            Intent intent1 = new Intent(Activity_sign_up.this, MainActivity.class);
+            Intent intent1 = new Intent(Activity_sign_up.this, Activity_log_in.class);
             startActivity(intent1);
         }
     }

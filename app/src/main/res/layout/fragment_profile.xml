@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,12 +8,254 @@
     tools:context=".ProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardProfile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Shorts"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="@color/white"/>
+        android:layout_gravity="center"
+        android:layout_margin="50px"
+        app:cardCornerRadius="30px"
+        app:cardElevation="30px"
+        app:contentPadding="50px">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutProfDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="236dp"
+                android:gravity="start"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/profUserType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="50dp"
+                    android:paddingTop="20px"
+                    android:text="User Type"
+                    android:textAlignment="textStart"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/profUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Username"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/profFullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="40px"
+                        android:text="Full Name"
+                        android:textColor="#000000"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="20px"
+                    android:layout_weight="1"
+                    android:text="My Info"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/profGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender"
+                    android:textAlignment="viewStart"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/profAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/profEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email Address"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/profContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact Number"
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="100px"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnDeleteAcc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5px"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/lavender"
+                        android:text="Delete Account"
+                        app:cornerRadius="20dp" />
+
+                    <Button
+                        android:id="@+id/btnEditAcc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5px"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/lavender"
+                        android:text="Edit Profile"
+                        app:cornerRadius="20dp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnLogOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#626FD5"
+                    android:text="Log Out"
+                    app:cornerRadius="15dp" />
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutProfEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Account"
+                    android:textAlignment="center"
+                    android:textColor="@color/lavender"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Username"
+                    android:inputType="text" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/editFirstName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="First Name"
+                        android:inputType="text" />
+
+                    <EditText
+                        android:id="@+id/editLastName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="Last Name"
+                        android:inputType="text" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/editGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Gender"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/editAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Address"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/editContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Contact Number"
+                    android:inputType="text" />
+
+                <Button
+                    android:id="@+id/btnConfirmEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20px"
+                    android:backgroundTint="@color/lavender"
+                    android:text="Confirm Edit"
+                    app:cornerRadius="15dp" />
+
+                <Button
+                    android:id="@+id/btnCancelEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#626FD5"
+                    android:text="Cancel"
+                    app:cornerRadius="15dp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </FrameLayout>

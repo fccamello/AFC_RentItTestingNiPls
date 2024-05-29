@@ -29,9 +29,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Upload Item for Rent"
-                android:textSize="30sp"
                 android:textAlignment="center"
-                android:textColor="@color/lavender"/>
+                android:textColor="@color/lavender"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -41,45 +42,42 @@
                 android:layout_marginTop="10dp" />
 
             <EditText
+                android:id="@+id/createTitle"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:id="@+id/createTitle"
-                android:layout_marginTop="20dp"
-                android:padding="16dp"
-                android:hint="Enter Title"
                 android:gravity="start|center_vertical"
-                android:textColor="@color/lavender"/>
+                android:hint="Title"
+                android:padding="16dp"
+                android:textColor="@color/lavender" />
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
                 android:id="@+id/createDesc"
-                android:layout_marginTop="20dp"
-                android:padding="16dp"
-                android:hint="Enter description"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
                 android:gravity="start|center_vertical"
-                android:textColor="@color/lavender"/>
+                android:hint="Description"
+                android:padding="16dp"
+                android:textColor="@color/lavender" />
 
 
             <EditText
+                android:id="@+id/createPrice"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:id="@+id/createPrice"
-                android:layout_marginTop="20dp"
-                android:padding="16dp"
-                android:hint="Enter Price/day"
                 android:gravity="start|center_vertical"
-                android:textColor="@color/lavender"/>
+                android:hint="Price/day"
+                android:padding="16dp"
+                android:textColor="@color/lavender" />
 
             <TextView
+                android:id="@+id/Category"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:id="@+id/Category"
-                android:layout_marginTop="20dp"
-                android:padding="16dp"
-                android:hint="Choose Category: "
                 android:gravity="start|center_vertical"
-                android:textColor="@color/lavender"/>
+                android:hint="Choose Category: "
+                android:padding="16dp"
+                android:textColor="@color/lavender"
+                android:textSize="18sp" />
 
             <CheckBox
                 android:id="@+id/catEducation"
@@ -104,13 +102,14 @@
 
 
             <Button
+                android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="Post"
-                android:id="@+id/btnSave"
-                android:textSize="18sp"
                 android:layout_marginTop="20dp"
-                app:cornerRadius = "20dp"/>
+                android:backgroundTint="@color/lavender"
+                android:text="Post"
+                android:textSize="18sp"
+                app:cornerRadius="20dp" />
 
         </LinearLayout>
 

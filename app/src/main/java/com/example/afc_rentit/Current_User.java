@@ -11,6 +11,7 @@ public class Current_User {
     private String lastname;
     private String email;
     private String address;
+    private String contact_number;
     private String gender;
     private boolean isOwner;
     public static Current_User getInstance(){
@@ -25,7 +26,7 @@ public class Current_User {
         instance = null;
     }
     public void setCurrent_User(int user_id, String username, String firstname, String lastname,
-                                String email, String address, String gender, boolean isOwner) {
+                                String email, String address, String contact_number, String gender, boolean isOwner) {
 
         this.user_id = user_id;
         this.username = username;
@@ -33,6 +34,7 @@ public class Current_User {
         this.lastname = lastname;
         this.email = email;
         this.address = address;
+        this.contact_number = contact_number;
         this.gender = gender;
         this.isOwner = isOwner;
     }
@@ -83,6 +85,13 @@ public class Current_User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+    public String getContact_number() {
+        return contact_number;
+    }
+
+    public void setContact_number(String contact_number) {
+        this.contact_number = contact_number;
     }
 
     public String getGender() {
