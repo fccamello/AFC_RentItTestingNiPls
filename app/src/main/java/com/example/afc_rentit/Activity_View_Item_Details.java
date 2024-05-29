@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.afc_rentit.Database.SQLConnection;
 
 import java.net.URL;
@@ -81,17 +82,24 @@ public class Activity_View_Item_Details extends AppCompatActivity {
         tv_itemOwner.setText(owner);
         tv_itemAdd.setText(address);
 
-        new Thread(() -> {
-            try {
-                URL url = new URL(image);
-                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                runOnUiThread(() -> iv_image.setImageBitmap(bitmap));
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Optionally set a placeholder or error image
-                runOnUiThread(() -> iv_image.setImageResource(R.drawable.round_add_photo_alternate_24));
-            }
-        }).start();
+//        new Thread(() -> {
+//            try {
+//                URL url = new URL(image);
+//                Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//                runOnUiThread(() -> iv_image.setImageBitmap(bitmap));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                // Optionally set a placeholder or error image
+//                runOnUiThread(() -> iv_image.setImageResource(R.drawable.round_add_photo_alternate_24));
+//            }
+//        }).start();
+
+        runOnUiThread(()->{
+            Glide.with(this)
+                    .load(image)
+                    .placeholder(R.drawable.round_add_photo_alternate_24) // Optional placeholder image
+                    .into(iv_image);
+        });
     }
 
     private void initializeViewItem() {

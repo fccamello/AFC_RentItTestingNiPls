@@ -37,9 +37,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.notification_item_card, parent, false);
-        System.out.println("nisud here");
-
-        View notificationView = LayoutInflater.from(context).inflate(R.layout.buyer_notification_item_card, parent, false);
+//        System.out.println("nisud here");
+//        View notificationView = LayoutInflater.from(context).inflate(R.layout.buyer_notification_item_card, parent, false);
 
         return new ViewHolder(view);
     }
@@ -68,7 +67,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.approveButton.setOnClickListener(v -> {
             //para mawala after ug approve
             notificationItems.remove(position);
-            fragment.updateApprovalStatus(item.getRentId(), 1, item.getItemId());
+            fragment.updateApprovalStatus(item.getRentId(), 1, item.getItemId(), item.getUserId());
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, notificationItems.size());
             Toast.makeText(context, "You have approved the rent request!", Toast.LENGTH_SHORT).show();
@@ -77,7 +76,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.declineButton.setOnClickListener(v -> {
             notificationItems.remove(position);
             notifyItemRemoved(position);
-            fragment.updateApprovalStatus(item.getRentId(), 0, item.getItemId());
+            fragment.updateApprovalStatus(item.getRentId(), 0, item.getItemId(), item.getUserId());
             notifyItemRangeChanged(position, notificationItems.size());
             Toast.makeText(context, "You have rejected the rent request!", Toast.LENGTH_SHORT).show();
         });

@@ -78,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void checkOwnerStatus() {
-        int userId = current_user.getUser_id(); // Assuming currentUser is an instance variable or accessible through other means
-
+        int userId = current_user.getUser_id();
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection conn = SQLConnection.getConnection();
@@ -92,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 if (resultSet.next()) {
                     int isOwner = resultSet.getInt("isOwner");
                     if (isOwner == 0) {
-                        // If the user is not an owner, hide the floating action button
                         runOnUiThread(() -> createPost.setVisibility(View.GONE));
                     }
                 }

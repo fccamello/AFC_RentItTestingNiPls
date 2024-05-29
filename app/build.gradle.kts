@@ -43,4 +43,6 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("mysql:mysql-connector-java:5.1.49")
+    implementation ("com.github.bumptech.glide:glide:4.15.1") // Use the latest stable version
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.2")
 }

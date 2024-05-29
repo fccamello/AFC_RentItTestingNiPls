@@ -99,9 +99,9 @@ public class DashboardFragment extends Fragment {
 
         item_adapter = new dashboard_item_adapter(getContext(), items);
         item_container.setAdapter(item_adapter);
-        item_adapter.notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void setupItemModels() {
         List<dashboard_item> temp_items = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class DashboardFragment extends Fragment {
             } else {
                 try (Connection conn = SQLConnection.getConnection();
                      PreparedStatement pStmt = conn.prepareStatement(
-                             "SELECT rent_id, i.item_id, title, image, description, category, price, isReturned " +
+                             "SELECT rent_id, i.item_id, i.user_id, title, image, description, category, price, isReturned " +
                                      "FROM tblItem as i, tblRentRequest as r " +
                                      "WHERE i.item_id = r.item_id AND r.user_id = ? AND isApproved = 1 AND isReturned = 0"
                      )){
@@ -159,7 +159,7 @@ public class DashboardFragment extends Fragment {
 
                         item.setRent_id(res.getInt("rent_id"));
                         item.setIsReturned(res.getInt("isReturned"));
-
+                        item.setItemOwner(res.getInt("user_id"));
                         temp_items.add(item);
                         querySuccess = true;
                     }
@@ -171,6 +171,7 @@ public class DashboardFragment extends Fragment {
             getActivity().runOnUiThread(()->{
                 items = temp_items;
                 System.out.println("dashboard items: " + items.size());
+                item_adapter.notifyDataSetChanged();
             });
         });
     }

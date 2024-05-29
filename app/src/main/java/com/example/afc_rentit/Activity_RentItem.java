@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.afc_rentit.Database.SQLConnection;
 
 import java.net.URL;
@@ -260,17 +261,24 @@ public class Activity_RentItem extends AppCompatActivity {
 
 
                     // FOR THE IMAGE
-                    new Thread(() -> {
-                        try {
-                            URL url = new URL(imageUrl);
-                            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                            runOnUiThread(() -> iv_itemImage.setImageBitmap(bitmap));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            // Optionally set a placeholder or error image
-                            runOnUiThread(() -> iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
-                        }
-                    }).start();
+//                    new Thread(() -> {
+//                        try {
+//                            URL url = new URL(imageUrl);
+//                            Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+//                            runOnUiThread(() -> iv_itemImage.setImageBitmap(bitmap));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            // Optionally set a placeholder or error image
+//                            runOnUiThread(() -> iv_itemImage.setImageResource(R.drawable.round_add_photo_alternate_24));
+//                        }
+//                    }).start();
+
+                    runOnUiThread(()->{
+                        Glide.with(this)
+                                .load(imageUrl)
+                                .placeholder(R.drawable.round_add_photo_alternate_24) // Optional placeholder image
+                                .into(iv_itemImage);
+                    });
 
                     res1Success = true;
                 }
@@ -287,12 +295,11 @@ public class Activity_RentItem extends AppCompatActivity {
                 if (res1Success){
                     runOnUiThread(()->{
                         displayItem();
-
-                        if (rent_id != -1){
+//                        if (rent_id != -1){
 //                            rentDisabled();
-                            Toast.makeText(this, "You have already requested to rent this item. Please wait for confirmation.", Toast.LENGTH_LONG).show();
-                            finish();
-                        }
+//                            Toast.makeText(this, "You have already requested to rent this item. Please wait for confirmation.", Toast.LENGTH_LONG).show();
+//                            finish();
+//                        }
                     });
                 }
             } catch (SQLException e) {

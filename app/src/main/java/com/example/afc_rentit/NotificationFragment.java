@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,11 +32,15 @@ import java.util.concurrent.Executors;
 
 public class NotificationFragment extends Fragment {
 
+    Button btnm, btni;
     List<NotificationItem> notificationItems = new ArrayList<>();
+    List<NotificationMessage> notificationmesage = new ArrayList<>();
+
     RecyclerView notificationContainer;
+    RecyclerView notificationMessageContainer;
     NotificationAdapter notificationAdapter;
 
-    NotificationAdapterBuyer notifbuyeradapter;
+    NotificationMessageAdapter notifmessageadapter;
     Current_User currentUser = Current_User.getInstance();
 
     private static final String ARG_PARAM1 = "param1";
@@ -64,7 +69,22 @@ public class NotificationFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        setupNotificationModels();
+            setupNotificationModels();
+        if (currentUser.isOwner()){
+            setupMessageModelsSeller();
+        }
+        else{
+            setupMessageModelsBuyer();
+        }
+
+        System.out.println("SIZE OF NOTIF " + notificationmesage.size());
+
+        if (notificationmesage != null && !notificationmesage.isEmpty()) {
+            // Dataset is not empty, log its size
+            System.out.println("notificationmesage dataset size: " + notificationmesage.size());
+        } else {
+            System.out.println("notificationmesage dataset is empty or null");
+        }
 
     }
 
@@ -83,14 +103,49 @@ public class NotificationFragment extends Fragment {
         notificationContainer.setLayoutManager(new LinearLayoutManager(getContext()));
         notificationContainer.setHasFixedSize(true);
 
-        if (!Current_User.getInstance().isOwner()) {
-            notifbuyeradapter = new NotificationAdapterBuyer(getContext(), notificationItems, this);
-            notificationContainer.setAdapter(notifbuyeradapter);
-        } else {
-            notificationAdapter = new NotificationAdapter(getContext(), notificationItems, this);
-            notificationContainer.setAdapter(notificationAdapter);
+        notificationMessageContainer = view.findViewById(R.id.rv_notifications_message);
+        notificationMessageContainer.setLayoutManager(new LinearLayoutManager(getContext()));
+        notificationMessageContainer.setHasFixedSize(true);
+
+        // Initially hide the items list
+        notificationContainer.setVisibility(View.GONE);
+        notificationMessageContainer.setVisibility(View.VISIBLE);
+
+        notificationAdapter = new NotificationAdapter(getContext(), notificationItems, this);
+        notifmessageadapter = new NotificationMessageAdapter(getContext(), notificationmesage, this);
+
+        notificationContainer.setAdapter(notificationAdapter);
+        notificationMessageContainer.setAdapter(notifmessageadapter);
+
+        btni = view.findViewById(R.id.btnItems);
+        btnm = view.findViewById(R.id.btnMessage);
+
+        if (!currentUser.isOwner()){
+            btni.setVisibility(View.GONE);
+            btnm.setVisibility(View.GONE);
+            notificationMessageContainer.setVisibility(View.VISIBLE);
         }
+
+        btni.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show items list when item button is clicked
+                notificationContainer.setVisibility(View.VISIBLE);
+                notificationMessageContainer.setVisibility(View.GONE);
+                System.out.println(" na click ang items");
+            }
+        });
+
+        btnm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notificationMessageContainer.setVisibility(View.VISIBLE);
+                notificationContainer.setVisibility(View.GONE);
+                System.out.println("na click ang message");
+            }
+        });
     }
+
 
     private void setupNotificationModels() {
         List<NotificationItem> tempNotificationItems = new ArrayList<>();
@@ -152,7 +207,110 @@ public class NotificationFragment extends Fragment {
         });
     }
 
-    public void updateApprovalStatus(int rentId, int status, int item_id) {
+    private void setupMessageModelsBuyer() {
+        List<NotificationMessage> tempNotificationMessages = new ArrayList<>();
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            try (Connection conn = SQLConnection.getConnection();
+                 PreparedStatement pStmt = conn.prepareStatement(
+                         "SELECT n.sender_user_id, n.receiver_user_id, n.message, i.title, r.totalAmount, r.duration, r.endRentDate, " +
+                                 "r.requestDate, n.rent_id " +
+                                 "FROM tblrentrequest r " +
+                                 "JOIN tblitem i ON r.item_id = i.item_id " +
+                                 "JOIN tblnotifs n ON r.rent_id = n.rent_id " +
+                                 "WHERE n.receiver_user_id = ?"
+
+                 )) {
+                pStmt.setInt(1, currentUser.getUser_id());
+
+                ResultSet res = pStmt.executeQuery();
+
+                while (res.next()) {
+                    int receiver = res.getInt("receiver_user_id");
+                    int senderid = res.getInt("sender_user_id");
+                    int duration = res.getInt("duration");
+                    double totalAmount = res.getDouble("r.totalAmount");
+                    String startdate = res.getString("requestDate");
+                    String end_date = res.getString("endRentDate");
+                    int rentid = res.getInt("n.rent_id");
+                    String message = res.getString("message");
+                    String title = res.getString("i.title");
+
+                    System.out.println(" CURRENT USER: " + currentUser.getUser_id());
+                    System.out.println("RECEIVER USER ID: " + receiver);
+                    System.out.println("Sender id: " + senderid + " rent id: " + rentid + " total amnt: "+ totalAmount + " start date " + startdate + " end_date " + end_date + " duration " +  duration + " message " + message + " title " +  title);
+                    NotificationMessage msg = new NotificationMessage(senderid, rentid, totalAmount,startdate, end_date, duration, message, title);
+                    tempNotificationMessages.add(msg);
+                    System.out.println("SIZE NI SIYA: " + tempNotificationMessages.size());
+                    System.out.println(" SUCCESS NI? BUYER ");
+                    System.out.println("MAO NI NOTIF MESSAGES " + msg);
+                }
+
+//                notificationmesage.addAll(tempNotificationMessages);
+//                System.out.println("INNER LOOP SIZE: " + notificationmesage.size());
+
+
+                getActivity().runOnUiThread(() -> {
+                    notificationmesage.clear();
+                    notificationmesage.addAll(tempNotificationMessages);
+                    notifmessageadapter.notifyDataSetChanged();
+                });
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        });
+    }
+
+
+
+//    private void setupMessageModelsSeller() {
+//        List<NotificationMessage> tempNotificationMessages = new ArrayList<>();
+//
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(() -> {
+//            try (Connection conn = SQLConnection.getConnection();
+//                 PreparedStatement pStmt = conn.prepareStatement(
+//                         "SELECT n.sender_user_id, n.message, i.title, i.price, r.duration, r.endRentDate, " +
+//                                 "r.startRentDate, r.totalAmount" +
+//                                 "FROM tblrentrequest r " +
+//                                 "JOIN tblitem i ON r.item_id = i.item_id " +
+//                                 "JOIN tblnotifs n ON r.rent_id = n.rent_id" +
+//                                 "WHERE n.receiver_user_id = ?"
+//                 )) {
+//                pStmt.setInt(1, currentUser.getUser_id());
+//
+//                ResultSet res = pStmt.executeQuery();
+//
+//                while (res.next()) {
+//                    int senderid = res.getInt("sender_user_id");
+//                    int rentid = res.getInt("n.rent_id");
+//                    String message = res.getString("message");
+//                    String title = res.getString("i.title");
+//
+//                    NotificationMessage msg = new NotificationMessage(senderid, rentid, message, title);
+//                    tempNotificationMessages.add(msg);
+//
+//                    getActivity().runOnUiThread(() -> {
+//                        notificationmesage.clear();
+//                        notificationmesage.addAll(tempNotificationMessages);
+//                        notifmessageadapter.notifyDataSetChanged();
+//                    });
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//        });
+//    }
+
+
+
+    public void updateApprovalStatus(int rentId, int status, int item_id, int user_id) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection conn = SQLConnection.getConnection();
@@ -160,7 +318,26 @@ public class NotificationFragment extends Fragment {
 
                  PreparedStatement pStmt = conn.prepareStatement(
                          "UPDATE tblrentrequest SET isApproved = ? WHERE rent_id = ?"
-                 )) {
+                 );
+
+                 PreparedStatement pStmt3 = conn.prepareStatement(
+                         "INSERT INTO tblnotifs (rent_id, sender_user_id, receiver_user_id, message) VALUES (?,?,?,?)"
+                 );
+
+
+                ) {
+
+                String message;
+
+                if(status == 0){
+                    message = "Your request has been declined!";}
+                else message = "Your request has been approved!";
+
+                pStmt3.setInt(1, rentId);
+                pStmt3.setInt(2, currentUser.getUser_id());
+                pStmt3.setInt(3, user_id);
+                pStmt3.setString(4, message);
+
 
                 pstmt2.setInt(1, 0);
                 pstmt2.setInt(2, item_id);
@@ -170,10 +347,11 @@ public class NotificationFragment extends Fragment {
 
                 pStmt.executeUpdate();
                 pstmt2.executeUpdate();
+                pStmt3.executeUpdate();
 
-                notifyBuyer(rentId, status);
+//                notifyBuyer(rentId, status);
 
-                // Update local data and notify adapter
+//                 Update local data and notify adapter
                 getActivity().runOnUiThread(() -> {
                     for (NotificationItem item : notificationItems) {
                         if (item.getRentId() == rentId) {
@@ -189,48 +367,101 @@ public class NotificationFragment extends Fragment {
         });
     }
 
-    private void notifyBuyer(int rentId, int status) {
+    private void setupMessageModelsSeller() {
+        System.out.println("NISUD KA?");
+        List<NotificationMessage> tempNotificationMessages = new ArrayList<>();
+
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             try (Connection conn = SQLConnection.getConnection();
                  PreparedStatement pStmt = conn.prepareStatement(
-                         "SELECT user_id FROM tblrentrequest WHERE rent_id = ?"
+                         "SELECT n.sender_user_id, n.message, n.rent_id, i.title, r.totalAmount, r.duration, r.endRentDate, " +
+                                 "r.requestDate " +
+                                 "FROM tblrentrequest r " +
+                                 "JOIN tblitem i ON r.item_id = i.item_id " +
+                                 "JOIN tblnotifs n ON r.rent_id = n.rent_id " +
+                                 "WHERE n.receiver_user_id = ? AND i.user_id = ?"
+
                  )) {
-                pStmt.setInt(1, rentId);
-                ResultSet rs = pStmt.executeQuery();
+                pStmt.setInt(1, currentUser.getUser_id());
+                pStmt.setInt(2, currentUser.getUser_id());
+                System.out.println("curr id " + currentUser.getUser_id());
 
-                if (rs.next()) {
-                    int buyerId = rs.getInt("user_id");
+                ResultSet res = pStmt.executeQuery();
 
-                    // Send notification to buyer
-                    String notificationMessage = (status == 1) ? "Your request has been approved." : "Your request has been rejected.";
-                    sendNotificationToBuyer(buyerId, notificationMessage);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
+                while (res.next()) {
+                    int senderid = res.getInt("sender_user_id");
+                    int duration = res.getInt("duration");
+                    double totalAmount = res.getDouble("r.totalAmount");
+                    String startdate = res.getString("requestDate");
+                    String end_date = res.getString("endRentDate");
+                    int rentid = res.getInt("n.rent_id");
+                    String message = res.getString("message");
+                    String title = res.getString("i.title");
 
-    private void sendNotificationToBuyer(int buyerId, String message) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            try (Connection conn = SQLConnection.getConnection();
-                 PreparedStatement pStmt = conn.prepareStatement(
-                         "INSERT INTO notifications (user_id, message) VALUES (?, ?)"
-                 )) {
-                pStmt.setInt(1, buyerId);
-                pStmt.setString(2, message);
-                pStmt.executeUpdate();
+                    System.out.println("TEST PRINT " + senderid + rentid + totalAmount + startdate + end_date + duration + message+ title);
+                    NotificationMessage msg = new NotificationMessage(senderid, rentid, totalAmount,startdate, end_date, duration, message, title);
+                    tempNotificationMessages.add(msg);
+                    System.out.println(" SUCCESS NI? ");
 
-                getActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(), "Notification sent to Buyer (ID: " + buyerId + "): " + message, Toast.LENGTH_SHORT).show();
+                    getActivity().runOnUiThread(() -> {
+                    notificationmesage.clear();
+                    notificationmesage.addAll(tempNotificationMessages);
+                    notifmessageadapter.notifyDataSetChanged();
                 });
+                }
+
+//
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
+
         });
     }
+
+//    private void notifyBuyer(int rentId, int status) {
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(() -> {
+//            try (Connection conn = SQLConnection.getConnection();
+//                 PreparedStatement pStmt = conn.prepareStatement(
+//                         "SELECT user_id FROM tblrentrequest WHERE rent_id = ?"
+//                 )) {
+//                pStmt.setInt(1, rentId);
+//                ResultSet rs = pStmt.executeQuery();
+//
+//                if (rs.next()) {
+//                    int buyerId = rs.getInt("user_id");
+//
+//                    // Send notification to buyer
+//                    String notificationMessage = (status == 1) ? "Your request has been approved." : "Your request has been rejected.";
+////                    sendNotificationToBuyer(buyerId, notificationMessage);
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+
+//    private void sendNotificationToBuyer(int buyerId, String message) {
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.execute(() -> {
+//            try (Connection conn = SQLConnection.getConnection();
+//                 PreparedStatement pStmt = conn.prepareStatement(
+//                         "INSERT INTO notifications (user_id, message) VALUES (?, ?)"
+//                 )) {
+//                pStmt.setInt(1, buyerId);
+//                pStmt.setString(2, message);
+//                pStmt.executeUpdate();
+//
+//                getActivity().runOnUiThread(() -> {
+//                    Toast.makeText(getContext(), "Notification sent to Buyer (ID: " + buyerId + "): " + message, Toast.LENGTH_SHORT).show();
+//                });
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 
     //ambot ani oi !!!!!!!!!!
 //        public List<Notifications> getNotificationsForUser() {

@@ -85,8 +85,9 @@ public class DatabaseManager {
 
                 String createtblNotif = "CREATE TABLE IF NOT EXISTS tblNotifs(" +
                         "notif_id INT AUTO_INCREMENT PRIMARY KEY," +
-                        "buyer_user_id INT NOT NULL," +
-                        "receiver_user_id INT NOT NULL" +
+                        "rent_id INT NOT NULL," +
+                        "sender_user_id INT NOT NULL," +
+                        "receiver_user_id INT NOT NULL," +
                         "message VARCHAR (255) NOT NULL)";
                 stmt.execute(createtblNotif);
 

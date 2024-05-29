@@ -84,7 +84,6 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
         setUpItemModels();
     }
 
@@ -101,6 +100,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
         item_views_container = view.findViewById(R.id.rv_ItemViews);
         searchbox = view.findViewById(R.id.searchbox);
         btnEducation = view.findViewById(R.id.btnEducation);
@@ -113,6 +114,7 @@ public class HomeFragment extends Fragment {
 
         item_adapter = new Home_Item_RecyclerViewAdapter(getContext(), items);
         item_views_container.setAdapter(item_adapter);
+
         item_adapter.notifyDataSetChanged();
 
         // SEARCH

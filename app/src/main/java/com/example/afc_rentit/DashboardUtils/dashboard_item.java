@@ -2,6 +2,7 @@ package com.example.afc_rentit.DashboardUtils;
 
 public class dashboard_item {
     int item_id;
+    int owner_id;
     String title;
     String image;
     String description;
@@ -63,6 +64,13 @@ public class dashboard_item {
         this.isAvailable = isAvailable;
     }
 
+    public void setItemOwner (int owner_id){
+        this.owner_id = owner_id;
+    }
+
+    public int getOwnerId(){
+        return owner_id;
+    }
     public void setIsReturned(int isReturned) {
         this.isReturned = isReturned;
     }
