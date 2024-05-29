@@ -110,15 +110,26 @@ public class DashboardFragment extends Fragment {
             boolean querySuccess = false;
             if (current_user.isOwner()){
                 try (Connection conn = SQLConnection.getConnection();
+                     PreparedStatement rStmt = conn.prepareStatement(
+                             "SELECT rent_id FROM tblrentrequest " +
+                                     "WHERE isApproved = 1 AND isReturned = 0 AND item_id = ?"
+                     );
                      PreparedStatement pStmt = conn.prepareStatement(
                              "SELECT item_id, title, image, description, category, price, isAvailable" +
-                                     " FROM tblItem WHERE user_id = ?"
+                                     " FROM tblItem  WHERE user_id = ?"
                      )){
                     pStmt.setInt(1, current_user.getUser_id());
 
                     ResultSet res = pStmt.executeQuery();
 
                     while (res.next()){
+                        rStmt.setInt(1, res.getInt("item_id"));
+                        ResultSet res2 = rStmt.executeQuery();
+
+                        if (res.next()){
+                            continue;
+                        }
+
                         dashboard_item item = new dashboard_item(
                                 res.getInt("item_id"),
                                 res.getString("title"),
